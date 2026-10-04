@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dinner Picker">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f6f2ea">
+<meta name="description" content="Family dinner picker with cuisine, protein, carb and time filters.">
+<title>What Are We Eating?</title>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#f6f2ea;color:#25211c;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+main{max-width:760px;margin:auto;padding:22px 16px 48px} h1{font-size:30px;margin:0 0 6px} p{line-height:1.45} .muted{color:#6f685f}
+.card{background:#fffdf9;border:1px solid #ded7cc;border-radius:16px;padding:15px;margin:12px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px} label{font-weight:650;font-size:14px;display:block}
+select{width:100%;margin-top:6px;min-height:46px;border:1px solid #cfc6b9;border-radius:11px;background:#fff;color:#25211c;font-size:16px;padding:8px 10px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0} button{min-height:46px;border-radius:11px;border:1px solid #cfc6b9;background:#fff;padding:10px 14px;font-size:16px;color:#25211c} button.primary{background:#f2d9ca;border-color:#c86a3c;font-weight:700}
+.switch{display:flex;align-items:center;gap:9px;font-weight:500;margin-top:10px} .switch input{width:20px;height:20px}
+#winner{border-color:#c86a3c;background:#fff7f2} #winner h2{font-size:25px;margin:4px 0} .meta{font-size:13px;color:#6f685f}
+.result{background:#fffdf9;border:1px solid #ded7cc;border-radius:14px;padding:14px;margin:10px 0} .result h3{margin:0 0 5px;font-size:18px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px} .tag{font-size:12px;border:1px solid #ded7cc;border-radius:999px;padding:4px 7px}
+.good{color:#2d6a4f;font-weight:700} .hidden{display:none} .counter{font-weight:650;margin-top:20px}
+@media(max-width:600px){.grid{grid-template-columns:1fr} h1{font-size:27px}}
+</style>
+</head>
+<body><main>
+<h1>What Are We Eating? 🍽️</h1>
+<p class="muted">Choose as much or as little as you care about tonight. The order does not matter.</p>
+<div class="card">
+<div class="grid">
+<label>Cuisine<select id="cuisine"></select></label>
+<label>Protein<select id="protein"></select></label>
+<label>Carb<select id="carb"></select></label>
+<label>Time<select id="time"></select></label>
+</div>
+<label class="switch"><input id="includeNew" type="checkbox" checked> Include dishes we haven't cooked yet</label>
+<div class="actions"><button class="primary" id="pick" type="button">🎲 Pick for us</button><button id="reset" type="button">Clear filters</button></div>
+</div>
+<div id="winner" class="card hidden" aria-live="polite"><div class="meta">TONIGHT'S PICK</div><h2 id="winnerName"></h2><div class="meta" id="winnerMeta"></div><p id="winnerBlurb"></p><button class="primary" id="again" type="button">🎲 Pick another</button></div>
+<div class="counter" id="count"></div>
+<div id="results"></div>
+<div class="actions"><button id="more" type="button" class="hidden">Show more</button></div>
+<script>
+(function(){
+var cuisines=['Indian / Punjabi','Mexican','Thai','Italian','Greek','Chinese / Taiwanese','Malaysian','Vietnamese','Modern Australian / Pub','European Favourites','Middle Eastern / North African'];
+var proteins=['Chicken','Beef','Lamb','Pork','Seafood / Fish','Vegetarian'];
+var carbs=['Rice','Noodles','Pasta / Gnocchi','Bread / Flatbread','Tortillas','Potato','Dumpling / Pastry'];
+var times=['Under 1 hour','1-2 hours','2-4 hours','4-6 hours','All bloody day'];
+var raw=`Punjabi Chicken Curry|0|0|0,3|2|1;Lamb Keema|0|2|0,3|1|1;Chole–Dal Hybrid|0|5|0,3|1|1;Vegetable Jalfrezi|0|5|0,3|0|1;Lamb Keema-Stuffed Paratha|0|2|3|2|0;Lamb Kofta Curry|0|2|0,3|1|0;Butter Chicken|0|0|0,3|1|0;Rogan Josh|0|2|0,3|2|0;Dal Makhani|0|5|0,3|3|0;Chana Masala|0|5|0,3|1|0;Aloo Gobi|0|5|0,3|0|0;Palak / Saag Paneer|0|5|0,3|1|0;Vindaloo|0|3,0|0,3|2|0;Rajma|0|5|0|1|0;Kofta in Makhani Gravy|0|2,1|0,3|1|0;Achari Chicken|0|0|0,3|1|0;Chicken Tinga Tacos|1|0|4|1|1;Carnitas Tacos|1|3|4|3|1;Chipotle Pork & Beans Tacos|1|3|4|2|1;Beef Chile Colorado|1|1|0,4|3|0;Cochinita Pibil|1|3|0,4|3|0;Al Pastor|1|3|4|2|0;Birria|1|1|4|3|0;Enchiladas Rojas|1|0,1,5|4|1|0;Chicken Enchiladas Verdes|1|0|4|1|0;Fish Tacos|1|4|4|0|0;Black Bean & Mushroom Tacos|1|5|4|0|0;Thai Green Curry|2|0|0|1|1;Lamb Massaman|2|2|0,5|3|1;Thai Chicken Satay|2|0|0|1|1;Khao Soi|2|0|1|2|1;Pad Kra Pao|2|3,0,1|0|0|0;Pad See Ew|2|0,1|1|0|0;Pad Thai|2|0,4,5|1|0|0;Panang Curry|2|0,1|0|1|0;Thai Red Curry|2|0,1,5|0|1|0;Tom Kha Gai|2|0|0|1|0;Tom Yum|2|4,0|0,1|0|0;Crying Tiger Beef|2|1|0|0|0;Thai Basil Pork Noodles|2|3|1|0|0;Meatballs & Sugo|3|1,3|2|2|1;Lasagne al Forno|3|1,3|2|2|0;Ragù alla Bolognese|3|1,3|2|2|0;Sausage & Fennel Ragù|3|3|2|1|0;Chicken Cacciatore|3|0|2,3|1|0;Chicken Parmigiana|3|0|2|1|0;Osso Buco|3|1|0,5|3|0;Eggplant Parmigiana|3|5|3|2|0;Gnocchi with Brown Butter & Sage|3|5|2|1|0;Baked Gnocchi with Lamb Polpette|3|2|2|2|0;Risotto|3|0,4,5|0|1|0;Pasta alla Norma|3|5|2|1|0;Amatriciana|3|3|2|0|0;Carbonara|3|3|2|0|0;Porchetta|3|3|5,3|3|0;Pastitsio|4|1,2|2|2|1;Moussaka|4|2,1|5|2|0;Chicken Souvlaki|4|0|3|1|0;Pork Souvlaki|4|3|3|1|0;Youvarlakia Avgolemono|4|1,2|0|1|0;Keftedes|4|1,2|3|1|0;Soutzoukakia Smyrneika|4|1,2|0,5|1|0;Giouvetsi|4|1,2|2|2|0;Lamb Kleftiko|4|2|5|3|0;Lamb Fricassée Avgolemono|4|2|0,3|2|0;Greek Lemon Chicken & Potatoes|4|0|5|1|0;Gemista|4|5,1|0|2|0;Spanakopita|4|5|6|1|0;Gigantes Plaki|4|5|3|2|0;Fasolada|4|5|3|1|0;Chicken Gyros|4|0|3|1|0;Pork Gyros|4|3|3|1|0;Kontosouvli|4|3,2|5,3|3|0;Stifado|4|1|5,0|2|0;House Chinese Chicken Noodle Soup|5|0|1|1|1;Dan Dan Noodles|5|3|1|0|0;Mapo Tofu|5|3|0|0|0;Kung Pao Chicken|5|0|0|0|0;Black Pepper Beef|5|1|0|0|0;Beef Chow Fun|5|1|1|0|0;Chicken Chow Mein|5|0|1|0|0;Char Siu Pork|5|3|0,1|2|0;Hong Shao Rou|5|3|0|2|0;Salt & Pepper Chicken|5|0|0|0|0;Sweet & Sour Pork|5|3|0|1|0;Chinese Braised Beef Noodle Soup|5|1|1|3|0;Wonton Noodle Soup|5|3,4|1,6|2|0;Scallion Oil Noodles|5|5|1|0|0;Three Cup Chicken|5|0|0|1|0;Taiwanese Beef Noodle Soup|5|1|1|3|0;Cumin Lamb|5|2|0,3|0|0;Cantonese-Style Claypot Chicken Rice|5|0|0|1|0;Beef Rendang|6|1|0|3|1;Malaysian Chicken Satay|6|0|0|1|0;Nasi Lemak|6|0,1,5|0|2|0;Ayam Goreng Berempah|6|0|0|2|0;Ayam Masak Merah|6|0|0|1|0;Kari Ayam|6|0|0,3|1|0;Ayam Percik|6|0|0|2|0;Curry Laksa|6|0,4|1|1|0;Assam Laksa|6|4|1|2|0;Char Kway Teow|6|4,3|1|0|0;Mee Goreng Mamak|6|0,1,5|1|0|0;Nasi Goreng Kampung|6|4,0|0|0|0;Hainanese Chicken Rice|6|0|0|2|0;KL Hokkien Mee|6|3,4|1|0|0;Malaysian Claypot Chicken Rice|6|0|0|1|0;Bak Kut Teh|6|3|0|2|0;Murtabak|6|1,0,2|3|3|0;Roti Canai + Curry|6|0,5|3|3|0;Nasi Kandar Night|6|0,1,2,5|0|4|0;Sambal Chicken|6|0|0|1|0;Sambal Udang|6|4|0|0|0;Ikan Bakar|6|4|0|1|0;Daging Masak Kicap|6|1|0|1|0;Malaysian Kurma|6|1,0|0,3|2|0;Soto Ayam|6|0|1,0|2|0;Bánh Mì|7|3,0|3|0|0;Phở Bò|7|1|1|3|0;Bún Thịt Nướng|7|3|1|1|0;Cơm Tấm|7|3|0|1|0;Gà Kho Gừng|7|0|0|1|0;Thịt Kho Trứng|7|3|0|2|0;Bò Lúc Lắc|7|1|0|0|0;Pub Chicken Parma + Chips|8|0|5|1|0;Chicken Schnitzel + Gravy|8|0|5|0|0;Steak + Chips + Peppercorn Sauce|8|1|5|0|0;Steak Sandwich|8|1|3|0|0;Aussie Burger with the Lot|8|1|3|0|0;Smash Burgers|8|1|3|0|0;Fish & Chips|8|4|5|1|0;Classic Beef Meat Pie|8|1|6|2|0;Shepherd’s Pie|8|2|5|1|0;Cottage Pie|8|1|5|1|0;BBQ Chicken Thighs + Corn/Slaw|8|0|5|0|0;Crispy Pork Belly + Apple Slaw|8|3|5|2|0;Pork Chops + Mustard-Cider Sauce|8|3|5|0|0;Beef Short Ribs + Mash|8|1|5|3|0;Lamb Shanks + Mash|8|2|5|3|0;Beef Cheeks + Mash|8|1|5|3|0;Sausage & Mash Tray Bake|8|3|5|1|0;Mac & Cheese with BBQ Meat|8|1,3|2|2|0;Loaded Baked Potatoes|8|1,3,5|5|1|0;Paella Valenciana-ish|9|0|0|1|0;Spanish Chicken & Chorizo Rice|9|0,3|0|1|0;Portuguese Piri-Piri Chicken|9|0|0,5|1|0;Albondigas in Tomato Sauce|9|1,3|5,3|1|0;Lamb Kofta + Flatbread + Yoghurt Sauce|10|2|3|1|0;Chicken Shawarma|10|0|3,0|1|0;Lamb Kefta Tagine with Eggs|10|2|3|1|0;Afghan Kofta Challaw|10|1,2|0|2|0`;
+var dishes=raw.split(';').map(function(x){var a=x.split('|');return{name:a[0],cuisine:cuisines[Number(a[1])],proteins:a[2].split(',').map(function(i){return proteins[Number(i)]}),carbs:a[3].split(',').map(function(i){return carbs[Number(i)]}),time:times[Number(a[4])],proven:a[5]==='1'}});
+var el={cuisine:document.getElementById('cuisine'),protein:document.getElementById('protein'),carb:document.getElementById('carb'),time:document.getElementById('time'),includeNew:document.getElementById('includeNew'),pick:document.getElementById('pick'),reset:document.getElementById('reset'),again:document.getElementById('again'),winner:document.getElementById('winner'),winnerName:document.getElementById('winnerName'),winnerMeta:document.getElementById('winnerMeta'),winnerBlurb:document.getElementById('winnerBlurb'),count:document.getElementById('count'),results:document.getElementById('results'),more:document.getElementById('more')};
+var shown=16,last='';
+function fill(select,values,label){select.innerHTML='';var o=document.createElement('option');o.value='';o.textContent='Any '+label;select.appendChild(o);values.forEach(function(v){var op=document.createElement('option');op.value=v;op.textContent=v;select.appendChild(op)})}
+fill(el.cuisine,cuisines,'cuisine'); fill(el.protein,proteins,'protein'); fill(el.carb,carbs,'carb'); fill(el.time,times,'time');
+function match(d){if(!el.includeNew.checked&&!d.proven)return false;if(el.cuisine.value&&d.cuisine!==el.cuisine.value)return false;if(el.protein.value&&d.proteins.indexOf(el.protein.value)<0)return false;if(el.carb.value&&d.carbs.indexOf(el.carb.value)<0)return false;if(el.time.value&&d.time!==el.time.value)return false;return true}
+function current(){return dishes.filter(match)}
+function blurb(d){var n=d.name.toLowerCase();if(n.indexOf('taco')>=0)return'Hot tortillas, punchy toppings and a proper messy-table feed.';if(n.indexOf('noodle soup')>=0||n.indexOf('phở')>=0||n.indexOf('laksa')>=0||n.indexOf('tom yum')>=0||n.indexOf('tom kha')>=0||n.indexOf('soto')>=0)return'A steaming aromatic bowl where the broth gets to be the main event.';if(n.indexOf('burger')>=0||n.indexOf('sandwich')>=0||n.indexOf('bánh mì')>=0)return'Messy, handheld and built around crispy edges, sharp bits and sauce.';if(n.indexOf('pie')>=0||n.indexOf('pastitsio')>=0||n.indexOf('moussaka')>=0||n.indexOf('lasagne')>=0)return'Layered baked comfort food with a browned top and no interest in being light.';if(n.indexOf('curry')>=0||n.indexOf('rendang')>=0||n.indexOf('massaman')>=0||n.indexOf('vindaloo')>=0||n.indexOf('kurma')>=0)return'Saucy, aromatic and designed to disappear with rice or bread.';return'Dinner with plenty of flavour and enough personality to earn its place in the family catalogue.'}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); });
+}
+var savedState = null;
+try { savedState = JSON.parse(localStorage.getItem('dinnerPickerState') || 'null'); } catch(e) {}
+if(savedState){
+  if(savedState.cuisine) el.cuisine.value=savedState.cuisine;
+  if(savedState.protein) el.protein.value=savedState.protein;
+  if(savedState.carb) el.carb.value=savedState.carb;
+  if(savedState.time) el.time.value=savedState.time;
+  if(typeof savedState.includeNew==='boolean') el.includeNew.checked=savedState.includeNew;
+}
+function saveState(){
+  try{
+    localStorage.setItem('dinnerPickerState', JSON.stringify({
+      cuisine:el.cuisine.value, protein:el.protein.value, carb:el.carb.value,
+      time:el.time.value, includeNew:el.includeNew.checked
+    }));
+  }catch(e){}
+}
+
+function render(){saveState();var list=current();el.count.textContent=list.length+' '+(list.length===1?'dish fits':'dishes fit')+' right now.';el.results.innerHTML='';list.slice(0,shown).forEach(function(d){var box=document.createElement('div');box.className='result';var h=document.createElement('h3');h.textContent=d.name;var m=document.createElement('div');m.className='meta';m.textContent=d.cuisine+' · '+d.time+' · '+(d.proven?'✓ Cooked here':'○ New idea');var p=document.createElement('p');p.textContent=blurb(d);var tags=document.createElement('div');tags.className='tags';d.proteins.concat(d.carbs).forEach(function(t){var s=document.createElement('span');s.className='tag';s.textContent=t;tags.appendChild(s)});var b=document.createElement('button');b.type='button';b.textContent='Choose tonight';b.addEventListener('click',function(){choose(d)});box.appendChild(h);box.appendChild(m);box.appendChild(p);box.appendChild(tags);box.appendChild(b);el.results.appendChild(box)});if(shown<list.length){el.more.classList.remove('hidden');el.more.textContent='Show more ('+(list.length-shown)+' left)'}else{el.more.classList.add('hidden')}}
+function choose(d){if(!d)return;last=d.name;el.winnerName.textContent=d.name;el.winnerMeta.textContent=d.cuisine+' · '+d.time+' · '+d.proteins.join(' / ')+' · '+d.carbs.join(' / ');el.winnerBlurb.textContent=blurb(d);el.winner.classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
+function randomPick(){var list=current();if(last&&list.length>1)list=list.filter(function(d){return d.name!==last});if(!list.length)return null;return list[Math.floor(Math.random()*list.length)]}
+[el.cuisine,el.protein,el.carb,el.time,el.includeNew].forEach(function(x){x.addEventListener('change',function(){shown=16;el.winner.classList.add('hidden');render()})});
+el.pick.addEventListener('click',function(){choose(randomPick())});el.again.addEventListener('click',function(){choose(randomPick())});el.reset.addEventListener('click',function(){try{localStorage.removeItem('dinnerPickerState')}catch(e){};el.cuisine.value='';el.protein.value='';el.carb.value='';el.time.value='';el.includeNew.checked=true;shown=16;last='';el.winner.classList.add('hidden');render()});el.more.addEventListener('click',function(){shown+=16;render()});render();
+})();
+</script>
+</main></body></html>
