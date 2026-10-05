@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#171310" />
+  <title>Monday Mince World Tour | Family Dinner Picker</title>
+  <style>
+    :root{
+      --bg:#171310;
+      --panel:#241c17;
+      --panel2:#2d231c;
+      --ink:#fff7ed;
+      --muted:#cdb9a6;
+      --accent:#ffb24a;
+      --accent2:#ff7048;
+      --green:#7bc47f;
+      --line:#47362b;
+      --shadow:0 18px 55px rgba(0,0,0,.32);
+      --r:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; color:var(--ink); background:
+      radial-gradient(circle at 20% 0%, rgba(255,178,74,.12), transparent 34rem),
+      radial-gradient(circle at 100% 15%, rgba(255,112,72,.08), transparent 28rem),
+      var(--bg);
+      font-family: ui-rounded, "SF Pro Rounded", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height:100vh;
+    }
+    button, select, input { font:inherit }
+    .wrap{width:min(960px,100%); margin:auto; padding:24px 16px 56px}
+    header{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px}
+    .brand h1{margin:0; font-size:clamp(28px,6vw,52px); letter-spacing:-.045em; line-height:.95}
+    .brand p{margin:10px 0 0; color:var(--muted); font-size:14px}
+    .stamp{font-size:42px; filter:drop-shadow(0 8px 16px rgba(0,0,0,.25))}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01)),var(--panel); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow)}
+    .hero{padding:18px; overflow:hidden; position:relative}
+    .controls{display:grid; grid-template-columns:1fr auto; gap:10px; margin-bottom:14px}
+    select{width:100%; color:var(--ink); background:var(--panel2); border:1px solid var(--line); padding:13px 14px; border-radius:14px}
+    .ghost{border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:14px; padding:0 14px}
+    .machine{
+      min-height:310px; border-radius:18px; background:
+      linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.28)),
+      repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0 1px,transparent 1px 8px),
+      #120f0d;
+      border:1px solid #3a2c24; display:grid; place-items:center; text-align:center; padding:24px;
+      position:relative;
+    }
+    .eyebrow{text-transform:uppercase; font-weight:800; letter-spacing:.14em; font-size:11px; color:var(--accent)}
+    #flag{font-size:84px; line-height:1; margin:8px 0; filter:drop-shadow(0 12px 20px rgba(0,0,0,.28)); transition:transform .16s ease}
+    #country{font-size:clamp(30px,8vw,58px); font-weight:900; letter-spacing:-.04em; line-height:1}
+    #dish{font-size:clamp(18px,4.5vw,28px); margin-top:9px; color:#ffe4bd; font-weight:750}
+    #desc{margin:10px auto 0; color:var(--muted); max-width:580px; line-height:1.45}
+    .spinrow{display:grid; grid-template-columns:1fr; gap:10px; margin-top:14px}
+    .primary{
+      border:0; border-radius:18px; padding:17px 18px; font-weight:950; letter-spacing:.03em; color:#241307;
+      background:linear-gradient(135deg,var(--accent),#ffd27a); box-shadow:0 12px 28px rgba(255,178,74,.16);
+      cursor:pointer;
+    }
+    .primary:active{transform:translateY(1px)}
+    .actions{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px}
+    .action{border:1px solid var(--line); background:var(--panel2); color:var(--ink); padding:13px; border-radius:14px; font-weight:800}
+    .action:disabled{opacity:.4}
+    .tabs{display:flex; gap:8px; overflow:auto; padding:18px 0 10px; scrollbar-width:none}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{white-space:nowrap; border:1px solid var(--line); background:var(--panel); color:var(--muted); padding:10px 13px; border-radius:999px; font-weight:800}
+    .tab.active{background:#fff0d8; color:#241307; border-color:#fff0d8}
+    section.view{display:none}
+    section.view.active{display:block}
+    .grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
+    @media(max-width:680px){.grid{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.ghost{padding:12px}.wrap{padding-top:16px}}
+    .card{padding:16px; position:relative}
+    .cardtop{display:flex; justify-content:space-between; gap:12px; align-items:flex-start}
+    .card h3{margin:0; font-size:18px}
+    .card small{color:var(--muted)}
+    .badge{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); padding:6px 9px; border-radius:999px; font-size:12px; color:var(--muted)}
+    .dishlist{display:grid; gap:8px; margin-top:12px}
+    .dishrow{padding:10px 11px; border-radius:12px; background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.04); display:flex; justify-content:space-between; gap:10px; align-items:center}
+    .dishrow.done{opacity:.68}
+    .heart{border:0; background:transparent; font-size:20px; padding:4px}
+    .history{display:grid; gap:10px}
+    .historyitem{padding:14px 15px; display:grid; gap:8px}
+    .historyhead{display:flex; justify-content:space-between; gap:10px}
+    .rating{display:flex; gap:4px; flex-wrap:wrap}
+    .star{border:0; background:transparent; font-size:20px; opacity:.38; padding:1px}
+    .star.on{opacity:1}
+    .empty{padding:34px 18px; text-align:center; color:var(--muted)}
+    .rabbit{
+      margin-top:18px; width:100%; border:1px dashed #6d5340; background:rgba(255,255,255,.015); color:#9d8878;
+      padding:15px; border-radius:15px; font-weight:800;
+    }
+    .toast{position:fixed; left:50%; bottom:24px; transform:translate(-50%,30px); background:#fff3df; color:#2a1709; padding:11px 14px; border-radius:999px; font-weight:850; opacity:0; pointer-events:none; transition:.22s; z-index:20}
+    .toast.show{opacity:1; transform:translate(-50%,0)}
+    dialog{border:1px solid var(--line); border-radius:22px; color:var(--ink); background:var(--panel); width:min(520px,calc(100% - 24px)); box-shadow:var(--shadow)}
+    dialog::backdrop{background:rgba(0,0,0,.65)}
+    dialog h2{margin-top:0}
+    .modal-actions{display:flex; gap:8px; justify-content:flex-end; margin-top:16px}
+    .danger{background:#4a201b}
+    .note{font-size:13px;color:var(--muted); line-height:1.45}
+  
+    .back-home{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      margin:0 0 14px;
+      padding:9px 12px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      color:var(--muted);
+      text-decoration:none;
+      font-weight:800;
+      background:rgba(255,255,255,.025);
+    }
+    .back-home:hover{color:var(--ink)}
+  </style>
+</head>
+<body>
+<div class="wrap"><a class="back-home" href="./">← Family Dinner Picker</a>
+  <header>
+    <div class="brand">
+      <h1>Monday Mince<br>World Tour 🌍🍚</h1>
+      <p>One country gets the mince. Every Monday.</p>
+    </div>
+    <div class="stamp">🛂</div>
+  </header>
+
+  <div class="panel hero">
+    <div class="controls">
+      <select id="mode">
+        <option value="chaos">🎲 Chaos Mode — anything eligible</option>
+        <option value="new">🛂 New Stamp — untried dishes first</option>
+        <option value="faves">⭐ Family Favourites — weighted by ratings</option>
+      </select>
+      <button class="ghost" id="resetSpin">Reset pick</button>
+    </div>
+
+    <div class="machine">
+      <div>
+        <div class="eyebrow" id="status">READY FOR DEPARTURE</div>
+        <div id="flag">🌍</div>
+        <div id="country">Where are we going?</div>
+        <div id="dish">Spin the globe</div>
+        <div id="desc">Cooked cuisines cool down for four Monday cooks before they can win again.</div>
+      </div>
+    </div>
+
+    <div class="spinrow">
+      <button class="primary" id="spin">SPIN THE GLOBE 🌍</button>
+    </div>
+    <div class="actions">
+      <button class="action" id="lock" disabled>🔒 LOCK IT IN</button>
+      <button class="action" id="cooked" disabled>✅ COOKED IT</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-view="tour">🌍 Tour Board</button>
+    <button class="tab" data-view="passport">🛂 Passport</button>
+    <button class="tab" data-view="rules">⚙️ Rules</button>
+  </div>
+
+  <section class="view active" id="tour">
+    <div class="grid" id="tourGrid"></div>
+  </section>
+
+  <section class="view" id="passport">
+    <div class="history" id="history"></div>
+  </section>
+
+  <section class="view" id="rules">
+    <div class="panel card">
+      <h3>House rules</h3>
+      <p class="note"><b>Cooldown:</b> when a cuisine is cooked, it sits out for the next four cooked Mondays. This stops one favourite cuisine taking over the world tour.</p>
+      <p class="note"><b>Chaos Mode:</b> every eligible dish has an equal chance.</p>
+      <p class="note"><b>New Stamp:</b> only dishes you haven't cooked yet go into the draw, unless you've tried everything eligible.</p>
+      <p class="note"><b>Family Favourites:</b> higher repeat ratings get extra lottery tickets, but every eligible dish still has a chance.</p>
+      <p class="note"><b>Favourites:</b> tap the heart beside any dish. In Family Favourites mode, hearts also get a small boost.</p>
+      <button class="action danger" id="clearData">Clear all saved tour data</button>
+    </div>
+    <button class="rabbit" disabled>🐇 OPEN THE BIRYANI RABBIT HOLE — DOOR CURRENTLY BOLTED</button>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<dialog id="ratingDialog">
+  <h2>Passport stamp earned 🛂</h2>
+  <p id="ratingPrompt"></p>
+  <p class="note">How badly would the family want this again?</p>
+  <div class="rating" id="ratingStars"></div>
+  <div class="modal-actions">
+    <button class="action" id="skipRating">Rate later</button>
+    <button class="primary" id="saveRating" style="padding:12px 16px">Save stamp</button>
+  </div>
+</dialog>
+
+<script>
+const cuisines = [
+  {c:"Mexico",f:"🇲🇽",d:[
+    ["Beef taco rice + Mexican jalfrezi","Smoky tomato beef rice with a charred capsicum, onion, corn & bean side."],
+    ["Chipotle pork mince + rice","Smoky chipotle pork, tomato, rice and bright lime finish."],
+    ["Chicken mince, black bean + corn rice","Lighter mince with beans, corn, cumin and coriander."],
+    ["Chorizo-style beef mince + tomato rice","Paprika-heavy beef with garlicky tomato rice."]
+  ]},
+  {c:"India",f:"🇮🇳",d:[
+    ["Lamb keema + peas rice","Punjabi-style spiced lamb mince, peas and basmati."],
+    ["Mince butter chicken-style rice","Tomato, butter, warming spice and mince in a rice-friendly format."],
+    ["Keema jalfrezi rice","Keema with charred capsicum, onion and punchy spices."],
+    ["Dhal–cholé rice bowl","Red lentils, chickpeas, spice and rice — mince optional."],
+    ["Keema biryani 👀","Door stays bolted for now."]
+  ]},
+  {c:"Punjabi / Pakistani",f:"🇵🇰",d:[
+    ["Spicy lamb keema + basmati","Deeply spiced lamb mince with fluffy basmati."],
+    ["Keema matar","Mince and peas with a tomato-onion masala."],
+    ["Keema chana","Spiced mince and chickpeas."],
+    ["Achari mince + rice","Pickle-spiced mince with tang and chilli."]
+  ]},
+  {c:"Lebanon",f:"🇱🇧",d:[
+    ["Hashweh","Beef or lamb, rice, cinnamon, allspice, toasted nuts and yoghurt."],
+    ["Lamb mince + chickpea rice","Warm-spiced lamb with chickpeas and herbs."],
+    ["Baharat beef rice + yoghurt","Baharat-spiced beef, rice and cooling yoghurt."],
+    ["Toasted nuts + herb rice","Mince, buttery rice, fresh herbs and crunchy nuts."]
+  ]},
+  {c:"Persia",f:"🇮🇷",d:[
+    ["Spiced lamb mince + saffron rice","Fragrant lamb over saffron-style rice."],
+    ["Kofta-style mince + tomato rice","Kofta spices in an easy mince format."],
+    ["Lentil, mince + caramelised onion rice","Sweet onion, lentils and savoury mince."],
+    ["Herbs, sumac + yoghurt mince rice","Bright, tangy and herb-heavy."]
+  ]},
+  {c:"Türkiye",f:"🇹🇷",d:[
+    ["Kıymalı pilav","Savoury mince with buttery rice."],
+    ["Tomato, capsicum + beef rice","Simple, rich and family-friendly."],
+    ["Lamb mince + eggplant rice","Lamb, aubergine and warm spice."],
+    ["Aleppo chilli + yoghurt mince rice","Warm chilli, tangy yoghurt and herbs."]
+  ]},
+  {c:"Greece",f:"🇬🇷",d:[
+    ["Lamb mince, oregano + lemon rice","Bright lemon, oregano and lamb."],
+    ["Beef mince + tomato-cinnamon rice","Tomato richness with gentle cinnamon."],
+    ["Deconstructed stuffed capsicum rice","Everything good about stuffed peppers, one pot."],
+    ["Lamb, spinach + feta rice","Salty feta and spinach to finish."]
+  ]},
+  {c:"Thailand",f:"🇹🇭",d:[
+    ["Pad kra pao mince + jasmine rice","Garlic, chilli, fish sauce, basil and fried egg energy."],
+    ["Red curry pork mince rice","Red curry paste, pork and coconut."],
+    ["Green curry chicken mince rice","Green curry aromatics with chicken mince."],
+    ["Larb-style mince + herby rice","Lime, fish sauce, toasted rice and herbs."]
+  ]},
+  {c:"Vietnam",f:"🇻🇳",d:[
+    ["Caramelised pork mince + rice","Sweet-savoury pork with fish sauce and garlic."],
+    ["Lemongrass chicken mince rice","Fresh lemongrass, chilli and chicken."],
+    ["Fish sauce, garlic + chilli beef","Fast, salty, punchy beef."],
+    ["Nuoc cham-style herb mince rice","Fresh herbs and sharp dressing over savoury mince."]
+  ]},
+  {c:"China",f:"🇨🇳",d:[
+    ["Ginger-Shaoxing pork mince + rice","Ginger, garlic, Shaoxing and soy."],
+    ["Sichuan chilli mince + rice","Chilli bean paste and numbing pepper."],
+    ["Mapo tofu + pork mince rice","Tofu, pork, chilli and Sichuan pepper."],
+    ["Mushroom, soy + sesame beef rice","Umami-heavy beef with mushrooms."]
+  ]},
+  {c:"Taiwan",f:"🇹🇼",d:[
+    ["Lu rou fan-inspired pork mince","Soy-braised pork mince with fried shallot."],
+    ["Five-spice beef mince + rice","Warm five-spice and savoury beef."],
+    ["Soy-braised mince + egg","Comfort-food rice bowl with egg."],
+    ["Fried shallot pork rice","Rich pork and loads of shallot flavour."]
+  ]},
+  {c:"Korea",f:"🇰🇷",d:[
+    ["Gochujang beef rice","Sweet, spicy, savoury beef."],
+    ["Bulgogi-style mince bowls","Soy, pear-ish sweetness, sesame and spring onion."],
+    ["Spicy pork mince + kimchi rice","Pork, gochujang and kimchi."],
+    ["Sesame beef + fried egg","Simple beef rice bowl with runny egg."]
+  ]},
+  {c:"Japan",f:"🇯🇵",d:[
+    ["Chicken soboro don","Sweet-savoury minced chicken over rice."],
+    ["Beef soboro + rice","Quick soy-seasoned beef mince."],
+    ["Teriyaki mince + vegetables","Glossy teriyaki mince and veg."],
+    ["Japanese curry mince rice","Comforting curry sauce, mince and rice."]
+  ]},
+  {c:"Indonesia",f:"🇮🇩",d:[
+    ["Sambal beef mince + rice","Sambal-driven spicy beef."],
+    ["Kecap manis pork mince","Sweet soy, garlic and pork."],
+    ["Rendang-spiced mince rice","Rendang aromatics in weeknight form."],
+    ["Nasi goreng-ish mince pot","Fried-rice flavours in the mince-and-rice format."]
+  ]},
+  {c:"Malaysia",f:"🇲🇾",d:[
+    ["Beef rendang mince rice","Coconut, spice and rendang aromatics."],
+    ["Sambal chicken mince","Spicy sambal-forward chicken."],
+    ["Curry laksa-spiced mince + rice","Laksa aromatics without turning dinner into soup."],
+    ["Satay mince + peanut rice bowl","Spiced mince with rich peanut sauce."]
+  ]},
+  {c:"Philippines",f:"🇵🇭",d:[
+    ["Giniling","Pork or beef, tomato, potato, carrot and peas."],
+    ["Adobo pork mince + rice","Soy-vinegar-garlic adobo flavours."],
+    ["Garlic beef mince + rice","Big garlic, savoury beef, simple rice."],
+    ["Sweet-savoury tomato mince rice","Family-friendly tomato-rich mince."]
+  ]},
+  {c:"Cajun / Creole",f:"🇺🇸",d:[
+    ["Dirty rice","Cajun-spiced mince, rice, capsicum, celery and onion."],
+    ["Cajun beef + capsicum rice","Smoky spice with charred capsicum."],
+    ["Creole tomato mince rice","Tomato, aromatics and Creole spice."],
+    ["Andouille-style pork mince rice","Pork mince seasoned in sausage territory."]
+  ]},
+  {c:"Caribbean",f:"🇯🇲",d:[
+    ["Jerk beef mince + rice and peas","Jerk spice with coconut rice-and-peas energy."],
+    ["Curry goat-style lamb mince rice","Caribbean curry flavours using lamb mince."],
+    ["Scotch bonnet pork mince","Fruity heat and savoury pork."],
+    ["Coconut rice + spicy beef","Rich coconut rice with hot beef."]
+  ]},
+  {c:"Spain",f:"🇪🇸",d:[
+    ["Smoked paprika beef + tomato rice","Pimentón, beef and tomato."],
+    ["Chorizo-style pork mince + rice","Garlic and smoked paprika pork."],
+    ["Beef, capsicum + pea rice","Colourful one-pot comfort."],
+    ["Saffron-ish mince rice","Golden fragrant rice with savoury mince."]
+  ]},
+  {c:"North Africa",f:"🇲🇦",d:[
+    ["Harissa lamb mince + rice","Harissa heat, lamb and herbs."],
+    ["Moroccan beef + chickpea rice","Warm spice, beef and chickpeas."],
+    ["Ras el hanout lamb + apricot","Sweet-fragrant lamb with dried fruit."],
+    ["Preserved-lemon-ish chicken mince rice","Bright lemony chicken with North African spice."]
+  ]}
+];
+
+const key="monday-mince-world-tour-v1";
+let state = JSON.parse(localStorage.getItem(key)||"null") || {
+  history:[],
+  favorites:{},
+  cooldowns:{},
+  current:null,
+  locked:false
+};
+// We already know the prototype has been cooked, but don't invent a family score.
+if(!localStorage.getItem(key) && !state.history.length){
+  state.history.push({
+    country:"Mexico", flag:"🇲🇽", dish:"Beef taco rice + Mexican jalfrezi",
+    desc:"Smoky tomato beef rice with a charred capsicum, onion, corn & bean side.",
+    rating:null, when:"Prototype cook"
+  });
+  state.cooldowns["Mexico"]=4;
+}
+
+const $=s=>document.querySelector(s);
+const save=()=>localStorage.setItem(key,JSON.stringify(state));
+const dishId=(c,d)=>c+"|||"+d;
+const toast=(msg)=>{const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1600)};
+
+function cookedSet(){
+  return new Set(state.history.map(h=>dishId(h.country,h.dish)));
+}
+function eligible(){
+  let arr=[];
+  for(const cu of cuisines){
+    const cd=state.cooldowns[cu.c]||0;
+    if(cd>0) continue;
+    cu.d.forEach(([dish,desc])=>arr.push({country:cu.c,flag:cu.f,dish,desc}));
+  }
+  if(!arr.length){
+    state.cooldowns={}; save();
+    return eligible();
+  }
+  const mode=$("#mode").value;
+  if(mode==="new"){
+    const done=cookedSet();
+    const fresh=arr.filter(x=>!done.has(dishId(x.country,x.dish)));
+    if(fresh.length) arr=fresh;
+  }
+  if(mode==="faves"){
+    const done=cookedSet();
+    const weighted=[];
+    arr.forEach(x=>{
+      const hist=state.history.filter(h=>h.country===x.country && h.dish===x.dish);
+      const last=hist.at(-1);
+      const r=last?.rating || 0;
+      const fav=state.favorites[dishId(x.country,x.dish)]?2:0;
+      const tickets=Math.max(1,1+r+fav);
+      for(let i=0;i<tickets;i++) weighted.push(x);
+    });
+    arr=weighted;
+  }
+  return arr;
+}
+function showPick(p,status="TONIGHT'S DESTINATION"){
+  $("#status").textContent=status;
+  $("#flag").textContent=p?.flag||"🌍";
+  $("#country").textContent=p?.country||"Where are we going?";
+  $("#dish").textContent=p?.dish||"Spin the globe";
+  $("#desc").textContent=p?.desc||"Cooked cuisines cool down for four Monday cooks before they can win again.";
+  $("#lock").disabled=!p;
+  $("#cooked").disabled=!p || !state.locked;
+}
+function resetPick(){
+  state.current=null; state.locked=false; save();
+  showPick(null,"READY FOR DEPARTURE");
+}
+let spinning=false;
+$("#spin").onclick=()=>{
+  if(spinning) return;
+  spinning=true; state.locked=false; $("#lock").disabled=true; $("#cooked").disabled=true;
+  const pool=eligible();
+  let ticks=0;
+  const timer=setInterval(()=>{
+    const p=pool[Math.floor(Math.random()*pool.length)];
+    showPick(p,"SPINNING…");
+    $("#flag").style.transform=`rotate(${(ticks%2? -1:1)*5}deg) scale(1.05)`;
+    ticks++;
+    if(ticks>=18){
+      clearInterval(timer);
+      const pick=pool[Math.floor(Math.random()*pool.length)];
+      state.current=pick; save(); spinning=false;
+      $("#flag").style.transform="";
+      showPick(pick,"TONIGHT'S DESTINATION");
+      toast("Destination selected 🌍");
+    }
+  },90+ticks*2);
+};
+$("#resetSpin").onclick=resetPick;
+$("#lock").onclick=()=>{
+  if(!state.current)return;
+  state.locked=true; save(); showPick(state.current,"LOCKED IN 🔒"); toast("Monday locked in");
+};
+$("#cooked").onclick=()=>{
+  if(!state.current || !state.locked)return;
+  $("#ratingPrompt").textContent=`${state.current.flag} ${state.current.country} — ${state.current.dish}`;
+  selectedRating=0; paintStars(); $("#ratingDialog").showModal();
+};
+
+let selectedRating=0;
+function paintStars(){
+  const box=$("#ratingStars"); box.innerHTML="";
+  for(let i=1;i<=10;i++){
+    const b=document.createElement("button"); b.className="star"+(i<=selectedRating?" on":"");
+    b.textContent=i<=selectedRating?"★":"☆"; b.title=i+"/10";
+    b.onclick=()=>{selectedRating=i;paintStars()};
+    box.appendChild(b);
+  }
+}
+function stampCook(rating){
+  Object.keys(state.cooldowns).forEach(c=>{
+    state.cooldowns[c]=Math.max(0,(state.cooldowns[c]||0)-1);
+  });
+  const p=state.current;
+  state.cooldowns[p.country]=4;
+  state.history.unshift({...p,rating:rating||null,when:new Date().toLocaleDateString("en-AU")});
+  state.current=null; state.locked=false; save();
+  $("#ratingDialog").close(); render(); resetPick(); toast("Passport stamped 🛂");
+}
+$("#saveRating").onclick=()=>stampCook(selectedRating);
+$("#skipRating").onclick=()=>stampCook(null);
+
+function renderTour(){
+  const grid=$("#tourGrid"); grid.innerHTML="";
+  const done=cookedSet();
+  cuisines.forEach(cu=>{
+    const cd=state.cooldowns[cu.c]||0;
+    const card=document.createElement("div"); card.className="panel card";
+    card.innerHTML=`<div class="cardtop"><div><h3>${cu.f} ${cu.c}</h3><small>${cu.d.length} destinations</small></div>
+      <span class="badge">${cd?`⏳ ${cd} cook${cd===1?"":"s"} cooldown`:"✅ eligible"}</span></div><div class="dishlist"></div>`;
+    const list=card.querySelector(".dishlist");
+    cu.d.forEach(([dish,desc])=>{
+      const id=dishId(cu.c,dish), fav=!!state.favorites[id], isDone=done.has(id);
+      const row=document.createElement("div"); row.className="dishrow"+(isDone?" done":"");
+      row.innerHTML=`<div><b>${isDone?"✓ ":""}${dish}</b><br><small>${desc}</small></div>
+        <button class="heart" aria-label="favorite">${fav?"❤️":"🤍"}</button>`;
+      row.querySelector(".heart").onclick=()=>{
+        state.favorites[id]=!state.favorites[id]; save(); renderTour();
+      };
+      list.appendChild(row);
+    });
+    grid.appendChild(card);
+  });
+}
+function renderHistory(){
+  const box=$("#history"); box.innerHTML="";
+  if(!state.history.length){box.innerHTML=`<div class="panel empty">No passport stamps yet. Spin the globe and cook something.</div>`;return}
+  state.history.forEach((h,idx)=>{
+    const el=document.createElement("div"); el.className="panel historyitem";
+    const rating=h.rating?`${h.rating}/10 ⭐`:"Not rated";
+    el.innerHTML=`<div class="historyhead"><div><b>${h.flag} ${h.country}</b><br><span>${h.dish}</span></div><b>${rating}</b></div>
+    <small style="color:var(--muted)">${h.when||""}</small>`;
+    box.appendChild(el);
+  });
+}
+function render(){
+  renderTour(); renderHistory();
+  if(state.current) showPick(state.current,state.locked?"LOCKED IN 🔒":"TONIGHT'S DESTINATION");
+  else showPick(null);
+}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===t));
+  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===t.dataset.view));
+});
+$("#clearData").onclick=()=>{
+  if(confirm("Clear the whole World Tour passport and all ratings?")){
+    localStorage.removeItem(key); location.reload();
+  }
+};
+render();
+</script>
+</body>
+</html>
