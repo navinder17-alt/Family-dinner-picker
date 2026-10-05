@@ -11,403 +11,755 @@
 <title>What Are We Eating?</title>
 <style>
 :root{
-  --bg:#f4efe6;
-  --bg2:#efe4d3;
-  --surface:#fffdf9;
-  --surface-2:#fff8f1;
-  --text:#2a231d;
-  --muted:#746a60;
-  --line:#e0d5c7;
-  --line-2:#ece4d8;
-  --shadow:0 10px 30px rgba(74,46,24,.08);
-  --shadow-soft:0 6px 18px rgba(74,46,24,.06);
-  --terracotta:#c86a3c;
-  --terracotta-deep:#a7552d;
-  --terracotta-soft:#f5ddd0;
-  --olive:#475b42;
-  --olive-soft:#edf3ea;
-  --mustard:#b8922f;
-  --mustard-soft:#fff7d6;
-  --accent-grad:linear-gradient(135deg,#cf6f40 0%,#b85f35 100%);
-  --hero-grad:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,249,242,.9));
-  --radius:18px;
+  --ink:#26211c;
+  --muted:#746b62;
+  --canvas:#f3eee6;
+  --paper:#fffdf9;
+  --paper-warm:#fff8f0;
+  --line:#e6ddd2;
+  --line-strong:#d7c8b7;
+  --terracotta:#bd6239;
+  --terracotta-dark:#934825;
+  --olive:#435a43;
+  --olive-soft:#eaf2e7;
+  --gold:#b9933f;
+  --shadow-sm:0 5px 18px rgba(66,43,26,.06);
+  --shadow-md:0 14px 34px rgba(66,43,26,.09);
+  --shadow-lg:0 24px 60px rgba(66,43,26,.13);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
   margin:0;
-  color:var(--text);
+  color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(223,194,160,.30), transparent 32%),
-    radial-gradient(circle at 85% 18%, rgba(200,106,60,.08), transparent 24%),
-    linear-gradient(180deg,var(--bg),#f8f3eb 28%, var(--bg));
+    radial-gradient(circle at 8% -4%,rgba(204,143,90,.22),transparent 25rem),
+    radial-gradient(circle at 98% 18%,rgba(103,122,80,.10),transparent 24rem),
+    linear-gradient(180deg,#f8f4ed 0%,var(--canvas) 44%,#f7f2eb 100%);
 }
-main{max-width:900px;margin:auto;padding:24px 16px 80px}
+body:before{
+  content:"";
+  position:fixed;inset:0;
+  pointer-events:none;
+  opacity:.25;
+  background-image:
+    linear-gradient(rgba(91,67,48,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(91,67,48,.025) 1px,transparent 1px);
+  background-size:28px 28px;
+  mask-image:linear-gradient(to bottom,black,transparent 70%);
+}
+main{
+  width:min(100%,940px);
+  margin:auto;
+  padding:26px 16px 96px;
+  position:relative;
+}
 h1,h2,h3{
   font-family:Georgia,"Times New Roman",serif;
-  letter-spacing:-0.02em;
+  letter-spacing:-.028em;
 }
-h1{font-size:2.35rem;line-height:1.02;margin:0 0 10px}
 p{line-height:1.55}
 .muted{color:var(--muted)}
+.hidden{display:none!important}
 
+/* HERO */
 .hero{
-  margin-bottom:16px;
-  padding:22px 22px 18px;
-  border:1px solid rgba(216,201,185,.9);
-  border-radius:26px;
-  background:var(--hero-grad);
-  box-shadow:var(--shadow);
   position:relative;
   overflow:hidden;
+  min-height:260px;
+  padding:28px;
+  border-radius:30px;
+  background:
+    linear-gradient(125deg,rgba(255,253,249,.98),rgba(255,245,232,.95)),
+    var(--paper);
+  border:1px solid rgba(217,199,180,.9);
+  box-shadow:var(--shadow-lg);
+  margin-bottom:18px;
 }
-.hero:before{
+.hero:after{
   content:"";
-  position:absolute; inset:auto -40px -60px auto;
-  width:180px;height:180px;border-radius:50%;
-  background:radial-gradient(circle, rgba(200,106,60,.18), rgba(200,106,60,0) 68%);
-  pointer-events:none;
+  position:absolute;
+  width:310px;height:310px;
+  right:-130px;top:-150px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(189,98,57,.22),rgba(189,98,57,0) 68%);
 }
 .hero-kicker{
-  display:inline-flex; align-items:center; gap:8px;
-  font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--terracotta-deep);
-  margin-bottom:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.17em;
+  text-transform:uppercase;
+  color:var(--terracotta-dark);
 }
 .hero-kicker:before{
   content:"";
-  width:28px;height:2px;border-radius:999px;background:var(--terracotta);
+  width:30px;height:2px;border-radius:999px;
+  background:linear-gradient(90deg,var(--terracotta),#d89a72);
 }
-.hero-row{
-  display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;
+.hero-content{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(230px,.75fr);
+  align-items:center;
+  gap:18px;
+  margin-top:10px;
+}
+.hero h1{
+  font-size:clamp(2.25rem,6vw,4rem);
+  line-height:.98;
+  margin:8px 0 13px;
+  max-width:620px;
 }
 .hero-sub{
   font-size:15px;
-  max-width:46rem;
+  max-width:610px;
   margin:0;
 }
+.hero-stats{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
 .hero-stat{
-  min-width:140px;
-  padding:12px 14px;
-  border-radius:18px;
-  border:1px solid rgba(200,106,60,.20);
-  background:rgba(255,255,255,.7);
-  box-shadow:var(--shadow-soft);
-  text-align:left;
+  min-width:126px;
+  padding:10px 12px;
+  border-radius:15px;
+  border:1px solid rgba(151,111,80,.16);
+  background:rgba(255,255,255,.68);
+  backdrop-filter:blur(8px);
+  box-shadow:0 4px 14px rgba(72,48,29,.04);
 }
 .hero-stat strong{
   display:block;
-  font-size:28px;
-  line-height:1;
-  color:var(--terracotta-deep);
   font-family:Georgia,"Times New Roman",serif;
+  font-size:23px;
+  line-height:1;
 }
 .hero-stat span{
   display:block;
-  margin-top:4px;
-  font-size:12px;
+  font-size:11px;
   color:var(--muted);
+  margin-top:4px;
 }
+.hero-art{
+  width:100%;
+  max-width:260px;
+  justify-self:end;
+  filter:drop-shadow(0 18px 22px rgba(107,64,34,.14));
+  transform:rotate(2deg);
+}
+.hero-art .plate{fill:#fffdf8;stroke:#d5c4b2;stroke-width:3}
+.hero-art .plate-inner{fill:#fff7ec;stroke:#ead8c5;stroke-width:2}
+.hero-art .sauce{fill:#cc7147}
+.hero-art .leaf{fill:#6e835f}
+.hero-art .gold{fill:#d6a64d}
+.hero-art .line{stroke:#8b715f;stroke-width:6;stroke-linecap:round}
 
+/* FILTER PANEL */
 .card{
-  background:var(--surface);
+  background:rgba(255,253,249,.96);
   border:1px solid var(--line);
   border-radius:24px;
-  padding:18px;
-  margin:12px 0;
-  box-shadow:var(--shadow-soft);
+  box-shadow:var(--shadow-sm);
 }
 .control-card{
   padding:18px;
+  margin:0 0 18px;
 }
-.control-card .grid{
+.filter-section{
+  padding:14px;
+  border-radius:20px;
+  background:linear-gradient(180deg,#fffaf3,#fffdf9);
+  border:1px solid #eee3d6;
+}
+.filter-section+.filter-section{margin-top:12px}
+.filter-section.secondary{
+  background:linear-gradient(180deg,#f8f6ef,#fffdf9);
+}
+.filter-section-head{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  margin-bottom:12px;
+}
+.filter-step{
+  width:28px;height:28px;flex:0 0 28px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  background:var(--terracotta);
+  color:white;
+  font-size:12px;font-weight:900;
+  box-shadow:0 5px 12px rgba(189,98,57,.20);
+}
+.filter-section.secondary .filter-step{
+  background:var(--olive);
+  box-shadow:0 5px 12px rgba(67,90,67,.16);
+}
+.filter-section-head strong{
+  display:block;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:17px;
+}
+.filter-section-head small{
+  display:block;
+  margin-top:2px;
+  font-size:11px;
+  color:var(--muted);
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+}
+label{
+  display:block;
+  font-weight:800;
+  font-size:12px;
+  color:#5d5148;
+  letter-spacing:.02em;
+}
+select{
+  width:100%;
+  min-height:48px;
+  margin-top:6px;
+  border:1px solid #dacbbb;
+  border-radius:14px;
+  background:#fff;
+  color:var(--ink);
+  font-size:15px;
+  padding:10px 36px 10px 11px;
+  box-shadow:0 2px 8px rgba(71,48,30,.035);
+}
+select:focus,button:focus,summary:focus,input:focus{
+  outline:3px solid rgba(189,98,57,.16);
+  outline-offset:2px;
+}
+.switch{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:12px;
+  padding:11px 12px;
+  border-radius:15px;
+  border:1px solid #eadfd3;
+  background:#fff;
+  font-weight:700;
+  font-size:13px;
+}
+.switch input{width:20px;height:20px;accent-color:var(--terracotta)}
+.helper{
+  margin:10px 3px 0;
+  color:#81766c;
+  font-size:11px;
+  line-height:1.45;
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.control-actions{margin-top:14px}
+button{
+  min-height:44px;
+  border-radius:14px;
+  border:1px solid #d9ccbd;
+  background:#fff;
+  padding:9px 13px;
+  color:var(--ink);
+  font-size:14px;
+  font-weight:700;
+  transition:transform .16s ease,box-shadow .16s ease,background .16s ease,border-color .16s ease;
+  box-shadow:0 2px 0 rgba(70,47,30,.025);
+}
+button:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(69,45,28,.08)}
+button:active{transform:translateY(0) scale(.99)}
+button.primary{
+  color:white;
+  border-color:#9c4a27;
+  background:linear-gradient(135deg,#cc6f42,#ad532d);
+  box-shadow:0 10px 22px rgba(174,82,43,.22);
+}
+#pick{min-width:180px}
+#reset{
+  background:transparent;
+  border-color:transparent;
+  box-shadow:none;
+  color:#75685d;
+}
+#tonightStatus{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin-top:12px;
+  padding:9px 11px;
+  border:1px solid #eadcd0;
+  border-radius:14px;
+  background:#f8efe8;
+  font-size:12px;
+}
+
+/* WINNER */
+.winner-card{
+  --accent:#bd6239;
+  --accent-soft:#f8e5d8;
+  position:relative;
+  overflow:hidden;
+  padding:22px;
+  margin:18px 0;
+  border:1px solid color-mix(in srgb,var(--accent) 38%,#ddd);
+  background:
+    radial-gradient(circle at 92% 0,var(--accent-soft),transparent 30%),
+    linear-gradient(180deg,#fffdf9,#fff9f2);
+  box-shadow:var(--shadow-lg);
+}
+.winner-card:not(.hidden){animation:winnerIn .34s ease both}
+@keyframes winnerIn{
+  from{opacity:0;transform:translateY(7px) scale(.99)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.winner-top{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  margin-bottom:6px;
+}
+.winner-mark{
+  width:58px;height:58px;flex:0 0 58px;
+  display:grid;place-items:center;
+  border-radius:18px;
+  background:var(--accent);
+  color:#fff;
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:.08em;
+  box-shadow:0 10px 22px color-mix(in srgb,var(--accent) 24%,transparent);
+}
+.winner-kicker{
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--accent);
+}
+#winner h2{
+  font-size:clamp(1.8rem,5vw,2.45rem);
+  margin:3px 0 0;
+  line-height:1.05;
+}
+#winner .meta{
+  font-size:12px;
+  color:#756a60;
+}
+.winner-actions{
+  display:flex;gap:9px;flex-wrap:wrap;margin-top:14px
+}
+.winner-actions button{flex:1 1 170px}
+.ate-confirm{color:var(--olive)!important;font-weight:900}
+
+/* RESULT AREA */
+.results-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:14px;
+  margin:24px 2px 10px;
+}
+.results-head h2{
+  font-size:1.55rem;
+  margin:0;
+}
+.counter{
+  color:#6e6359;
+  font-size:13px;
+  font-weight:700;
+  margin:0;
+}
+#results{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:14px;
 }
-.control-card label{
-  display:block;
-  font-weight:700;
-  font-size:13px;
-  color:#584d42;
-  letter-spacing:.01em;
-}
-.secondary-grid{margin-top:14px}
-select{
-  width:100%;
-  margin-top:7px;
-  min-height:50px;
-  border:1px solid #d7cab9;
-  border-radius:15px;
-  background:
-    linear-gradient(180deg, #fff, #fffaf4);
-  color:var(--text);
-  font-size:15px;
-  padding:10px 12px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
-}
-select:focus, button:focus, details summary:focus, input:focus{
-  outline:2px solid rgba(200,106,60,.24);
-  outline-offset:2px;
-}
-.switch{
-  display:flex;align-items:center;gap:10px;
-  font-weight:600;
-  margin-top:14px;
-  padding:12px 13px;
-  border-radius:16px;
-  background:#fcf7f0;
-  border:1px solid var(--line-2);
-}
-.switch input{width:20px;height:20px;accent-color:var(--terracotta)}
-.helper{
-  font-size:12px;color:#7a6f64;margin:10px 0 0;line-height:1.45
-}
-.actions{
-  display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 0
-}
-button{
-  min-height:46px;
-  border-radius:14px;
-  border:1px solid #d5c8b8;
-  background:#fff;
-  padding:10px 14px;
-  font-size:15px;
-  color:var(--text);
-  transition:transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
-  box-shadow:0 2px 0 rgba(88,58,35,.04);
-}
-button:hover{transform:translateY(-1px);box-shadow:0 8px 16px rgba(74,46,24,.08)}
-button.primary{
-  background:var(--accent-grad);
-  border-color:var(--terracotta-deep);
-  color:#fff;
-  font-weight:800;
-  box-shadow:0 10px 22px rgba(176,92,46,.22);
-}
-.control-actions{
-  position:sticky;
-  bottom:12px;
-  background:linear-gradient(180deg, rgba(255,253,249,0), rgba(255,253,249,.98) 22%);
-  padding-top:14px;
-  z-index:10;
-}
-.control-actions .primary{min-width:180px}
-#tonightStatus{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  margin-top:14px;padding:10px 12px;border-radius:15px;background:#f7f0e7;font-size:13px
-}
-.hidden{display:none !important}
-
-.winner-card{
-  border-color:#d59b78;
-  background:linear-gradient(180deg,#fff7f1,#fffdf9);
-  box-shadow:0 16px 34px rgba(143,84,51,.12);
-}
-#winner .meta{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--terracotta-deep);font-weight:800}
-#winner h2{font-size:2rem;margin:6px 0 6px}
-#winner .recent{margin-top:8px}
-.winner-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.winner-actions button{flex:1 1 180px}
-.ate-confirm{color:var(--olive);font-weight:800}
-
-.counter{
-  font-weight:700;
-  margin:22px 0 8px;
-  color:#564b40;
-}
-.counter:before{
-  content:"Results";
-  display:inline-block;
-  margin-right:10px;
-  padding:5px 9px;
-  border-radius:999px;
-  font-size:11px;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  background:#efe6d8;
-  color:#6d5f50;
-  vertical-align:middle;
-}
-
 .result{
-  background:linear-gradient(180deg,#fffefb,#fffaf4);
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:16px;
-  margin:12px 0;
-  box-shadow:var(--shadow-soft);
+  --accent:#bd6239;
+  --accent-soft:#f7e3d7;
   position:relative;
   overflow:hidden;
+  min-width:0;
+  padding:0 16px 16px;
+  border:1px solid #e6ddd2;
+  border-radius:23px;
+  background:linear-gradient(180deg,#fffefb,#fffaf4);
+  box-shadow:var(--shadow-sm);
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.result:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow-md);
+  border-color:color-mix(in srgb,var(--accent) 30%,#ddd);
 }
 .result:before{
   content:"";
-  position:absolute; inset:0 auto 0 0;
-  width:5px; background:linear-gradient(180deg,#d98a5f,#b15f36);
+  display:block;
+  height:5px;
+  margin:0 -16px 14px;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 65%,white));
+}
+.dish-head{
+  display:grid;
+  grid-template-columns:46px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+}
+.cuisine-mark{
+  width:46px;height:46px;
+  display:grid;place-items:center;
+  border-radius:15px;
+  background:var(--accent-soft);
+  color:var(--accent);
+  border:1px solid color-mix(in srgb,var(--accent) 26%,#e7ddd3);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.07em;
+}
+.dish-eyebrow{
+  color:var(--accent);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  line-height:1.2;
+  margin-bottom:2px;
 }
 .result h3{
-  margin:0 0 6px;
-  font-size:1.35rem;
-  padding-right:18px;
+  margin:0;
+  font-size:1.27rem;
+  line-height:1.08;
 }
-.meta{
-  font-size:12px;color:#75695d;
-  line-height:1.45;
+.time-badge{
+  align-self:start;
+  padding:6px 8px;
+  border-radius:999px;
+  background:#f5efe7;
+  color:#6d6155;
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
 }
-.result p{margin:12px 0 10px}
+.status-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:10px;
+}
+.status-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:5px 8px;
+  border-radius:999px;
+  border:1px solid #e2d8cc;
+  background:#fff;
+  color:#6b6056;
+  font-size:10px;
+  font-weight:800;
+}
+.status-pill.cooked{background:#edf5eb;border-color:#c7d8c4;color:#466347}
+.status-pill.new{background:#f7f1e8}
+.status-pill.loved{background:#fff0f2;border-color:#e8c2ca;color:#a44e60}
+.status-pill.house{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 24%,#e3d8ce);color:var(--accent)}
+.result>p{
+  margin:12px 0 10px;
+  font-size:14px;
+  color:#51483f;
+}
 .tags{
-  display:flex;flex-wrap:wrap;gap:7px;margin-top:10px
+  display:flex;flex-wrap:wrap;gap:6px;margin-top:10px
 }
 .tag{
-  font-size:12px;border:1px solid #ded4c7;border-radius:999px;padding:5px 9px;
-  background:#fff;
-  color:#5d5147
-}
-.good{color:var(--olive);font-weight:800}
-
-.pantry{margin:12px 0 2px;display:flex;flex-direction:column;gap:8px}
-.pantry-row{display:flex;align-items:flex-start;flex-wrap:wrap;gap:6px;font-size:13px}
-.pantry-row strong{margin-right:4px}
-.pantry-chip{
-  border-radius:999px;padding:5px 9px;border:1px solid #ddd5ca;background:#f5efe6;
-  font-size:12px
-}
-.pantry-row.check .pantry-chip{background:var(--mustard-soft);border-color:#e1ca71}
-.pantry-row.grab .pantry-chip{background:#fff0e8;border-color:#deac8e}
-.pantry.friendly{
-  display:inline-flex;align-items:center;gap:8px;
-  color:var(--olive);
-  font-weight:800;
-  font-size:13px;
-  background:var(--olive-soft);
-  border:1px solid #c5d7c6;
+  padding:5px 8px;
   border-radius:999px;
-  padding:7px 10px;
+  border:1px solid #e4dacf;
+  background:#fff;
+  color:#665a50;
+  font-size:10px;
+  font-weight:750;
+}
+
+/* CUISINE THEMES */
+[data-theme="indian"]{--accent:#b8612e;--accent-soft:#fae8d8}
+[data-theme="mexican"]{--accent:#b94b3f;--accent-soft:#f9e2df}
+[data-theme="thai"]{--accent:#637a45;--accent-soft:#edf2e3}
+[data-theme="italian"]{--accent:#8c654b;--accent-soft:#f1e8e1}
+[data-theme="greek"]{--accent:#4e7592;--accent-soft:#e6eff5}
+[data-theme="chinese"]{--accent:#a8483d;--accent-soft:#f5e4e1}
+[data-theme="malaysian"]{--accent:#a86f25;--accent-soft:#f8edd9}
+[data-theme="vietnamese"]{--accent:#4e7a65;--accent-soft:#e5f0ea}
+[data-theme="pub"]{--accent:#7d684c;--accent-soft:#efe9df}
+[data-theme="european"]{--accent:#705e7c;--accent-soft:#eee9f1}
+[data-theme="mena"]{--accent:#9a6b38;--accent-soft:#f4eadb}
+
+/* PANTRY / PREFERENCES / RECIPE */
+.pantry{margin:11px 0 3px;display:flex;flex-direction:column;gap:7px}
+.pantry-row{display:flex;align-items:flex-start;flex-wrap:wrap;gap:6px;font-size:12px}
+.pantry-row strong{margin-right:2px}
+.pantry-chip{
+  border-radius:999px;
+  padding:5px 8px;
+  border:1px solid #e0d7cc;
+  background:#f6f0e8;
+  font-size:11px;
+}
+.pantry-row.check .pantry-chip{background:#fff7d7;border-color:#e4d18e}
+.pantry-row.grab .pantry-chip{background:#ffefe7;border-color:#e5b79e}
+.pantry.friendly{
+  display:inline-flex;
   width:max-content;
+  align-items:center;
+  border:1px solid #cadbc7;
+  border-radius:999px;
+  background:var(--olive-soft);
+  color:var(--olive);
+  font-size:11px;
+  font-weight:900;
+  padding:6px 9px;
 }
-.recent{font-size:12px;color:#776e64;margin:8px 0}
-.pref-row{
-  display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 6px
-}
+.recent{font-size:11px;color:#80756b;margin:7px 0}
+.pref-row{display:flex;gap:6px;flex-wrap:wrap;margin:11px 0 5px}
 .pref-row button{
-  min-height:38px;padding:7px 10px;font-size:13px;border-radius:999px;background:#fff
+  min-height:36px;
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:11px;
+  background:#fff;
 }
-.pref-row button.active-love{background:#ffe7ec;border-color:#d68b99;font-weight:800}
-.pref-row button.active-fine{background:#eef4e9;border-color:#9db38f;font-weight:800}
-.pref-row button.active-veto{background:#f6e4dd;border-color:#bf745f;font-weight:800}
+.pref-row button.active-love{background:#ffedf0;border-color:#e1aab6;color:#a4485c}
+.pref-row button.active-fine{background:#eef5ea;border-color:#a9c09d;color:#466347}
+.pref-row button.active-veto{background:#f8e7df;border-color:#ca8a74;color:#874936}
 
 .recipe-zone{
-  margin-top:14px;
-  padding-top:12px;
-  border-top:1px solid #e8dfd3
+  margin-top:13px;
+  padding-top:11px;
+  border-top:1px dashed #e4d8cb;
 }
 .recipe-head{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px
+  display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px
 }
 .recipe-badge{
-  font-size:12px;font-weight:800;border-radius:999px;padding:5px 10px;border:1px solid #d7cec2;background:#f5efe6;color:#5d5147
+  font-size:10px;font-weight:900;
+  border-radius:999px;padding:5px 8px;
+  border:1px solid #ddd3c8;background:#f6efe7;color:#64584e;
 }
-.recipe-badge.house{background:#eaf5ec;border-color:#a8c9ae;color:var(--olive)}
-.recipe-yield{font-size:12px;color:#776d64}
+.recipe-badge.house{
+  background:var(--accent-soft);
+  border-color:color-mix(in srgb,var(--accent) 22%,#ddd);
+  color:var(--accent);
+}
+.recipe-yield{font-size:10px;color:#7d7268}
 details.recipe-detail{
-  border:1px solid #e2d8cb;
-  border-radius:15px;
-  background:linear-gradient(180deg,#fffdf9,#fff8f2);
-  margin:8px 0;
   overflow:hidden;
-  transition:box-shadow .18s ease, border-color .18s ease;
+  margin:7px 0;
+  border:1px solid #e5dbcf;
+  border-radius:14px;
+  background:#fff;
 }
 details.recipe-detail[open]{
-  border-color:#d8c9b8;
-  box-shadow:0 8px 18px rgba(74,46,24,.05);
+  box-shadow:0 7px 16px rgba(66,43,26,.04);
+  border-color:#d9cbbb;
 }
 details.recipe-detail summary{
-  cursor:pointer;list-style:none;padding:12px 13px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:8px
+  cursor:pointer;
+  list-style:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:11px 12px;
+  font-size:12px;
+  font-weight:900;
 }
 details.recipe-detail summary::-webkit-details-marker{display:none}
 details.recipe-detail summary:after{
-  content:'▾';font-size:13px;transition:transform .15s ease;color:#7b6c5e
+  content:"+";
+  width:20px;height:20px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  background:#f4eee6;
+  color:#706459;
+  transition:transform .16s ease;
 }
-details.recipe-detail[open] summary:after{transform:rotate(180deg)}
-.recipe-body{padding:0 13px 13px;border-top:1px solid #efe6da}
+details.recipe-detail[open] summary:after{
+  content:"−";
+  background:var(--accent-soft);
+  color:var(--accent);
+}
+.recipe-body{padding:0 12px 12px;border-top:1px solid #eee5da}
 .recipe-section-title{
-  font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#7a6d61;margin:12px 0 6px;font-weight:800
+  margin:11px 0 5px;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:#7b6e63;
 }
-.recipe-list,.method-list{margin:6px 0 0;padding-left:20px}
-.recipe-list li,.method-list li{margin:6px 0;line-height:1.45}
+.recipe-list,.method-list{margin:6px 0 0;padding-left:19px}
+.recipe-list li,.method-list li{margin:6px 0;line-height:1.45;font-size:13px}
 .method-list strong{display:block;margin-bottom:2px}
-.draft-note{font-size:13px;color:#766e64;line-height:1.5;margin:10px 0 0}
-
-#results > .result button:last-child{
+.draft-note{font-size:12px;color:#766d64;line-height:1.5;margin:10px 0 0}
+.choose-btn{
+  width:100%;
   margin-top:12px;
+  background:linear-gradient(180deg,#fff,#fff8f1);
+  border-color:color-mix(in srgb,var(--accent) 32%,#d9ccbd);
+  color:var(--accent);
+  font-weight:900;
 }
+.choose-btn:after{content:"  →"}
 
-@media (min-width: 720px){
-  #results{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:14px;
-  }
-  #results .result{margin:0}
+/* MORE + MOBILE DOCK */
+.more-row{justify-content:center;margin-top:16px}
+#more{min-width:180px}
+.mobile-dock{
+  display:none;
 }
-@media(max-width:600px){
-  main{padding:18px 14px 88px}
-  .control-card .grid{grid-template-columns:1fr}
-  h1{font-size:2rem}
-  #winner h2{font-size:1.75rem}
-  .hero{padding:18px}
-  .hero-stat{width:100%}
-  .control-actions{
-    position:sticky; bottom:8px;
-    margin:16px -6px 0;
-    padding:10px 6px 0;
+@media(max-width:720px){
+  main{padding:16px 12px 112px}
+  .hero{min-height:auto;padding:20px;border-radius:24px}
+  .hero-content{grid-template-columns:1fr}
+  .hero-art{
+    position:absolute;
+    width:130px;
+    right:-18px;
+    top:12px;
+    opacity:.16;
+    z-index:-1;
   }
-  .control-actions button{flex:1 1 140px}
+  .hero h1{font-size:2.38rem;max-width:330px}
+  .hero-sub{max-width:86%}
+  .hero-stats{gap:7px}
+  .hero-stat{min-width:0;flex:1}
+  .grid{grid-template-columns:1fr}
+  #results{grid-template-columns:1fr}
+  .result{border-radius:21px}
+  .dish-head{grid-template-columns:44px minmax(0,1fr) auto}
+  .control-actions{display:none}
+  .mobile-dock{
+    position:fixed;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    left:10px;right:10px;bottom:8px;
+    padding:9px;
+    border-radius:19px;
+    border:1px solid rgba(211,194,176,.88);
+    background:rgba(255,253,249,.88);
+    backdrop-filter:blur(18px) saturate(1.2);
+    box-shadow:0 16px 42px rgba(58,38,23,.18);
+  }
+  .mobile-dock button{
+    flex:1;
+    min-height:50px;
+    border-radius:14px;
+    color:#fff;
+    background:linear-gradient(135deg,#cc6f42,#a94f2a);
+    border-color:#984523;
+    font-size:15px;
+    font-weight:900;
+  }
+  .mobile-count{
+    flex:0 0 auto;
+    font-size:10px;
+    line-height:1.2;
+    color:#73675d;
+    text-align:center;
+    min-width:54px;
+  }
+  .winner-card{padding:18px;border-radius:23px}
+  .winner-top{align-items:flex-start}
+}
+@media(max-width:390px){
+  .time-badge{display:none}
+  .hero h1{font-size:2.2rem}
 }
 </style>
 </head>
 <body><main>
 <header class="hero">
 <div class="hero-kicker">Family Dinner Picker</div>
-<div class="hero-row">
+<div class="hero-content">
   <div>
-    <h1>What Are We Eating? 🍽️</h1>
-    <p class="muted hero-sub">Choose as much or as little as you care about tonight. Filter hard, roll the dice, and let the house favourites rise to the top.</p>
+    <h1>What Are We Eating?</h1>
+    <p class="muted hero-sub">A family shortlist of things actually worth eating — from quick weeknights to full Saturday cook-ups.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>151</strong><span>dinners to choose from</span></div>
+      <div class="hero-stat"><strong>15</strong><span>house recipes locked in</span></div>
+    </div>
   </div>
-  <div class="hero-stat"><strong>151</strong><span>dinners in the catalogue</span></div>
+  <svg class="hero-art" viewBox="0 0 260 260" aria-hidden="true">
+    <circle class="plate" cx="130" cy="130" r="92"/>
+    <circle class="plate-inner" cx="130" cy="130" r="70"/>
+    <path class="sauce" d="M86 142c22-35 64-43 90-11 15 19 9 44-14 55-25 12-63 2-76-20-5-8-5-16 0-24z"/>
+    <path class="leaf" d="M105 108c18-28 40-36 54-33-3 18-17 39-48 45z"/>
+    <path class="leaf" d="M145 104c10-23 29-34 43-34-2 18-12 34-34 46z"/>
+    <circle class="gold" cx="113" cy="150" r="8"/>
+    <circle class="gold" cx="144" cy="163" r="7"/>
+    <path class="line" d="M35 65v130M24 65v48M46 65v48"/>
+    <path class="line" d="M225 65v130M215 65c0 24 20 24 20 0"/>
+  </svg>
 </div>
 </header>
 <div class="card control-card">
+<div class="filter-section">
+<div class="filter-section-head"><span class="filter-step">1</span><div><strong>What sounds good?</strong><small>Start broad — every filter is optional.</small></div></div>
 <div class="grid">
 <label>Cuisine<select id="cuisine"></select></label>
 <label>Protein<select id="protein"></select></label>
 <label>Carb<select id="carb"></select></label>
 <label>Time<select id="time"></select></label>
 </div>
+</div>
+<div class="filter-section secondary">
+<div class="filter-section-head"><span class="filter-step">2</span><div><strong>Reality check</strong><small>Use what’s around, dodge repeats, or stick to house recipes.</small></div></div>
 <div class="grid secondary-grid">
 <label>Pantry effort<select id="pantryFilter"></select></label>
 <label>Avoid recent repeats<select id="recentFilter"></select></label>
 <label>Recipe status<select id="recipeFilter"></select></label>
+</div>
 </div>
 <label class="switch"><input id="includeNew" type="checkbox" checked> Include dishes we haven't cooked yet</label>
 <p class="helper">❤️ Loved dishes get extra weight in the random picker. Preferences and meal history stay on this device.</p>
 <div id="tonightStatus" class="tonight-status hidden"></div>
 <div class="actions control-actions"><button class="primary" id="pick" type="button">🎲 Pick for us</button><button id="reset" type="button">Clear filters</button></div>
 </div>
-<div id="winner" class="card winner-card hidden" aria-live="polite"><div class="meta">TONIGHT'S PICK</div><h2 id="winnerName"></h2><div class="meta" id="winnerMeta"></div><p id="winnerBlurb"></p><div id="winnerPantry"></div><div id="winnerRecent" class="recent"></div><div id="winnerRecipe"></div><div id="winnerPrefs"></div><div class="winner-actions"><button class="primary" id="again" type="button">🎲 Pick another</button><button id="ateThis" type="button">✓ We ate this</button></div></div>
-<div class="counter" id="count"></div>
+<div id="winner" class="card winner-card hidden" aria-live="polite"><div class="winner-top"><div id="winnerMark" class="winner-mark"></div><div><div class="winner-kicker">Tonight's pick</div><h2 id="winnerName"></h2></div></div><div class="meta" id="winnerMeta"></div><p id="winnerBlurb"></p><div id="winnerPantry"></div><div id="winnerRecent" class="recent"></div><div id="winnerRecipe"></div><div id="winnerPrefs"></div><div class="winner-actions"><button class="primary" id="again" type="button">🎲 Pick another</button><button id="ateThis" type="button">✓ We ate this</button></div></div>
+<div class="results-head"><h2>Your options</h2><div class="counter" id="count"></div></div>
 <div id="results"></div>
-<div class="actions"><button id="more" type="button" class="hidden">Show more</button></div>
+<div class="actions more-row"><button id="more" type="button" class="hidden">Show more</button></div>
+<div class="mobile-dock"><button id="mobilePick" type="button">🎲 Pick dinner</button><div id="mobileCount" class="mobile-count">151<br>options</div></div>
 <script>
 (function(){
 var cuisines=['Indian / Punjabi','Mexican','Thai','Italian','Greek','Chinese / Taiwanese','Malaysian','Vietnamese','Modern Australian / Pub','European Favourites','Middle Eastern / North African'];
 var proteins=['Chicken','Beef','Lamb','Pork','Seafood / Fish','Vegetarian'];
 var carbs=['Rice','Noodles','Pasta / Gnocchi','Bread / Flatbread','Tortillas','Potato','Dumpling / Pastry'];
 var times=['Under 1 hour','1-2 hours','2-4 hours','4-6 hours','All bloody day'];
+var cuisineLooks={
+  'Indian / Punjabi':{key:'indian',code:'IN'},
+  'Mexican':{key:'mexican',code:'MX'},
+  'Thai':{key:'thai',code:'TH'},
+  'Italian':{key:'italian',code:'IT'},
+  'Greek':{key:'greek',code:'GR'},
+  'Chinese / Taiwanese':{key:'chinese',code:'CN'},
+  'Malaysian':{key:'malaysian',code:'MY'},
+  'Vietnamese':{key:'vietnamese',code:'VN'},
+  'Modern Australian / Pub':{key:'pub',code:'AU'},
+  'European Favourites':{key:'european',code:'EU'},
+  'Middle Eastern / North African':{key:'mena',code:'ME'}
+};
+function cuisineLook(d){return cuisineLooks[d.cuisine]||{key:'indian',code:'•'}}
+
 var raw=`Punjabi Chicken Curry|0|0|0,3|2|1;Lamb Keema|0|2|0,3|1|1;Chole–Dal Hybrid|0|5|0,3|1|1;Vegetable Jalfrezi|0|5|0,3|0|1;Lamb Keema-Stuffed Paratha|0|2|3|2|0;Lamb Kofta Curry|0|2|0,3|1|0;Butter Chicken|0|0|0,3|1|0;Rogan Josh|0|2|0,3|2|0;Dal Makhani|0|5|0,3|3|0;Chana Masala|0|5|0,3|1|0;Aloo Gobi|0|5|0,3|0|0;Palak / Saag Paneer|0|5|0,3|1|0;Vindaloo|0|3,0|0,3|2|0;Rajma|0|5|0|1|0;Kofta in Makhani Gravy|0|2,1|0,3|1|0;Achari Chicken|0|0|0,3|1|0;Chicken Tinga Tacos|1|0|4|1|1;Carnitas Tacos|1|3|4|3|1;Chipotle Pork & Beans Tacos|1|3|4|2|1;Beef Chile Colorado|1|1|0,4|3|0;Cochinita Pibil|1|3|0,4|3|0;Al Pastor|1|3|4|2|0;Birria|1|1|4|3|0;Enchiladas Rojas|1|0,1,5|4|1|0;Chicken Enchiladas Verdes|1|0|4|1|0;Fish Tacos|1|4|4|0|0;Black Bean & Mushroom Tacos|1|5|4|0|0;Thai Green Curry|2|0|0|1|1;Lamb Massaman|2|2|0,5|3|1;Thai Chicken Satay|2|0|0|1|1;Khao Soi|2|0|1|2|1;Pad Kra Pao|2|3,0,1|0|0|0;Pad See Ew|2|0,1|1|0|0;Pad Thai|2|0,4,5|1|0|0;Panang Curry|2|0,1|0|1|0;Thai Red Curry|2|0,1,5|0|1|0;Tom Kha Gai|2|0|0|1|0;Tom Yum|2|4,0|0,1|0|0;Crying Tiger Beef|2|1|0|0|0;Thai Basil Pork Noodles|2|3|1|0|0;Meatballs & Sugo|3|1,3|2|2|1;Lasagne al Forno|3|1,3|2|2|0;Ragù alla Bolognese|3|1,3|2|2|0;Sausage & Fennel Ragù|3|3|2|1|0;Chicken Cacciatore|3|0|2,3|1|0;Chicken Parmigiana|3|0|2|1|0;Osso Buco|3|1|0,5|3|0;Eggplant Parmigiana|3|5|3|2|0;Gnocchi with Brown Butter & Sage|3|5|2|1|0;Baked Gnocchi with Lamb Polpette|3|2|2|2|0;Risotto|3|0,4,5|0|1|0;Pasta alla Norma|3|5|2|1|0;Amatriciana|3|3|2|0|0;Carbonara|3|3|2|0|0;Porchetta|3|3|5,3|3|0;Pastitsio|4|1,2|2|2|1;Moussaka|4|2,1|5|2|0;Chicken Souvlaki|4|0|3|1|0;Pork Souvlaki|4|3|3|1|0;Youvarlakia Avgolemono|4|1,2|0|1|0;Keftedes|4|1,2|3|1|0;Soutzoukakia Smyrneika|4|1,2|0,5|1|0;Giouvetsi|4|1,2|2|2|0;Lamb Kleftiko|4|2|5|3|0;Lamb Fricassée Avgolemono|4|2|0,3|2|0;Greek Lemon Chicken & Potatoes|4|0|5|1|0;Gemista|4|5,1|0|2|0;Spanakopita|4|5|6|1|0;Gigantes Plaki|4|5|3|2|0;Fasolada|4|5|3|1|0;Chicken Gyros|4|0|3|1|0;Pork Gyros|4|3|3|1|0;Kontosouvli|4|3,2|5,3|3|0;Stifado|4|1|5,0|2|0;House Chinese Chicken Noodle Soup|5|0|1|1|1;Dan Dan Noodles|5|3|1|0|0;Mapo Tofu|5|3|0|0|0;Kung Pao Chicken|5|0|0|0|0;Black Pepper Beef|5|1|0|0|0;Beef Chow Fun|5|1|1|0|0;Chicken Chow Mein|5|0|1|0|0;Char Siu Pork|5|3|0,1|2|0;Hong Shao Rou|5|3|0|2|0;Salt & Pepper Chicken|5|0|0|0|0;Sweet & Sour Pork|5|3|0|1|0;Chinese Braised Beef Noodle Soup|5|1|1|3|0;Wonton Noodle Soup|5|3,4|1,6|2|0;Scallion Oil Noodles|5|5|1|0|0;Three Cup Chicken|5|0|0|1|0;Taiwanese Beef Noodle Soup|5|1|1|3|0;Cumin Lamb|5|2|0,3|0|0;Cantonese-Style Claypot Chicken Rice|5|0|0|1|0;Beef Rendang|6|1|0|3|1;Malaysian Chicken Satay|6|0|0|1|0;Nasi Lemak|6|0,1,5|0|2|0;Ayam Goreng Berempah|6|0|0|2|0;Ayam Masak Merah|6|0|0|1|0;Kari Ayam|6|0|0,3|1|0;Ayam Percik|6|0|0|2|0;Curry Laksa|6|0,4|1|1|0;Assam Laksa|6|4|1|2|0;Char Kway Teow|6|4,3|1|0|0;Mee Goreng Mamak|6|0,1,5|1|0|0;Nasi Goreng Kampung|6|4,0|0|0|0;Hainanese Chicken Rice|6|0|0|2|0;KL Hokkien Mee|6|3,4|1|0|0;Malaysian Claypot Chicken Rice|6|0|0|1|0;Bak Kut Teh|6|3|0|2|0;Murtabak|6|1,0,2|3|3|0;Roti Canai + Curry|6|0,5|3|3|0;Nasi Kandar Night|6|0,1,2,5|0|4|0;Sambal Chicken|6|0|0|1|0;Sambal Udang|6|4|0|0|0;Ikan Bakar|6|4|0|1|0;Daging Masak Kicap|6|1|0|1|0;Malaysian Kurma|6|1,0|0,3|2|0;Soto Ayam|6|0|1,0|2|0;Bánh Mì|7|3,0|3|0|0;Phở Bò|7|1|1|3|0;Bún Thịt Nướng|7|3|1|1|0;Cơm Tấm|7|3|0|1|0;Gà Kho Gừng|7|0|0|1|0;Thịt Kho Trứng|7|3|0|2|0;Bò Lúc Lắc|7|1|0|0|0;Pub Chicken Parma + Chips|8|0|5|1|0;Chicken Schnitzel + Gravy|8|0|5|0|0;Steak + Chips + Peppercorn Sauce|8|1|5|0|0;Steak Sandwich|8|1|3|0|0;Aussie Burger with the Lot|8|1|3|0|0;Smash Burgers|8|1|3|0|0;Fish & Chips|8|4|5|1|0;Classic Beef Meat Pie|8|1|6|2|0;Shepherd’s Pie|8|2|5|1|0;Cottage Pie|8|1|5|1|0;BBQ Chicken Thighs + Corn/Slaw|8|0|5|0|0;Crispy Pork Belly + Apple Slaw|8|3|5|2|0;Pork Chops + Mustard-Cider Sauce|8|3|5|0|0;Beef Short Ribs + Mash|8|1|5|3|0;Lamb Shanks + Mash|8|2|5|3|0;Beef Cheeks + Mash|8|1|5|3|0;Sausage & Mash Tray Bake|8|3|5|1|0;Mac & Cheese with BBQ Meat|8|1,3|2|2|0;Loaded Baked Potatoes|8|1,3,5|5|1|0;Paella Valenciana-ish|9|0|0|1|0;Spanish Chicken & Chorizo Rice|9|0,3|0|1|0;Portuguese Piri-Piri Chicken|9|0|0,5|1|0;Albondigas in Tomato Sauce|9|1,3|5,3|1|0;Lamb Kofta + Flatbread + Yoghurt Sauce|10|2|3|1|0;Chicken Shawarma|10|0|3,0|1|0;Lamb Kefta Tagine with Eggs|10|2|3|1|0;Afghan Kofta Challaw|10|1,2|0|2|0`;
 var dishes=raw.split(';').map(function(x){var a=x.split('|');return{name:a[0],cuisine:cuisines[Number(a[1])],proteins:a[2].split(',').map(function(i){return proteins[Number(i)]}),carbs:a[3].split(',').map(function(i){return carbs[Number(i)]}),time:times[Number(a[4])],proven:a[5]==='1'}});
-var el={cuisine:document.getElementById('cuisine'),protein:document.getElementById('protein'),carb:document.getElementById('carb'),time:document.getElementById('time'),pantryFilter:document.getElementById('pantryFilter'),recentFilter:document.getElementById('recentFilter'),recipeFilter:document.getElementById('recipeFilter'),includeNew:document.getElementById('includeNew'),pick:document.getElementById('pick'),reset:document.getElementById('reset'),again:document.getElementById('again'),ateThis:document.getElementById('ateThis'),winner:document.getElementById('winner'),winnerName:document.getElementById('winnerName'),winnerMeta:document.getElementById('winnerMeta'),winnerBlurb:document.getElementById('winnerBlurb'),winnerPantry:document.getElementById('winnerPantry'),winnerRecent:document.getElementById('winnerRecent'),winnerRecipe:document.getElementById('winnerRecipe'),winnerPrefs:document.getElementById('winnerPrefs'),tonightStatus:document.getElementById('tonightStatus'),count:document.getElementById('count'),results:document.getElementById('results'),more:document.getElementById('more')};
+var el={cuisine:document.getElementById('cuisine'),protein:document.getElementById('protein'),carb:document.getElementById('carb'),time:document.getElementById('time'),pantryFilter:document.getElementById('pantryFilter'),recentFilter:document.getElementById('recentFilter'),recipeFilter:document.getElementById('recipeFilter'),includeNew:document.getElementById('includeNew'),pick:document.getElementById('pick'),reset:document.getElementById('reset'),again:document.getElementById('again'),ateThis:document.getElementById('ateThis'),winner:document.getElementById('winner'),winnerMark:document.getElementById('winnerMark'),winnerName:document.getElementById('winnerName'),winnerMeta:document.getElementById('winnerMeta'),winnerBlurb:document.getElementById('winnerBlurb'),winnerPantry:document.getElementById('winnerPantry'),winnerRecent:document.getElementById('winnerRecent'),winnerRecipe:document.getElementById('winnerRecipe'),winnerPrefs:document.getElementById('winnerPrefs'),tonightStatus:document.getElementById('tonightStatus'),count:document.getElementById('count'),results:document.getElementById('results'),more:document.getElementById('more'),mobilePick:document.getElementById('mobilePick'),mobileCount:document.getElementById('mobileCount')};
 var shown=16,last='',winnerDish=null;
 function fill(select,values,label){select.innerHTML='';var o=document.createElement('option');o.value='';o.textContent='Any '+label;select.appendChild(o);values.forEach(function(v){var op=document.createElement('option');op.value=v;op.textContent=v;select.appendChild(op)})}
 function fillPairs(select,pairs){select.innerHTML='';pairs.forEach(function(p){var o=document.createElement('option');o.value=p[0];o.textContent=p[1];select.appendChild(o)})}
@@ -516,26 +868,48 @@ function saveState(){
 }
 function render(){
   saveState();updateTonightStatus();var list=current();
-  el.count.textContent=list.length+' '+(list.length===1?'dish fits':'dishes fit')+' right now.';
+  el.count.textContent=list.length+' '+(list.length===1?'dish fits':'dishes fit');
+  if(el.mobileCount)el.mobileCount.innerHTML=list.length+'<br>'+(list.length===1?'option':'options');
   el.results.innerHTML='';
   list.slice(0,shown).forEach(function(d){
-    var box=document.createElement('div');box.className='result';
+    var look=cuisineLook(d);
+    var box=document.createElement('div');box.className='result';box.dataset.theme=look.key;
+
+    var head=document.createElement('div');head.className='dish-head';
+    var mark=document.createElement('div');mark.className='cuisine-mark';mark.textContent=look.code;
+    var titleWrap=document.createElement('div');
+    var eye=document.createElement('div');eye.className='dish-eyebrow';eye.textContent=d.cuisine;
     var h=document.createElement('h3');h.textContent=d.name;
-    var m=document.createElement('div');m.className='meta';var mp=[d.cuisine,d.time,isCookedHere(d)?'✓ Cooked here':'○ New idea'];if(preferences[d.name]==='love')mp.push('❤️ Loved');m.textContent=mp.join(' · ');
+    titleWrap.appendChild(eye);titleWrap.appendChild(h);
+    var time=document.createElement('div');time.className='time-badge';time.textContent=d.time;
+    head.appendChild(mark);head.appendChild(titleWrap);head.appendChild(time);
+
+    var status=document.createElement('div');status.className='status-row';
+    function pill(text,cls){var s=document.createElement('span');s.className='status-pill '+cls;s.textContent=text;status.appendChild(s)}
+    pill(isCookedHere(d)?'✓ Cooked here':'○ New idea',isCookedHere(d)?'cooked':'new');
+    if(recipeData(d))pill('House recipe','house');
+    if(preferences[d.name]==='love')pill('♥ Loved','loved');
+
     var p=document.createElement('p');p.textContent=blurb(d);
     var pantry=pantryNode(d);
     var r=document.createElement('div');r.className='recent';r.textContent=recentText(d);
     var tags=document.createElement('div');tags.className='tags';d.proteins.concat(d.carbs).forEach(function(t){var sp=document.createElement('span');sp.className='tag';sp.textContent=t;tags.appendChild(sp)});
     var recipe=recipeNode(d);
     var prefs=prefControls(d);
-    var b=document.createElement('button');b.type='button';b.textContent='Choose tonight';b.addEventListener('click',function(){choose(d)});
-    box.appendChild(h);box.appendChild(m);box.appendChild(p);box.appendChild(pantry);if(r.textContent)box.appendChild(r);box.appendChild(tags);box.appendChild(recipe);box.appendChild(prefs);box.appendChild(b);el.results.appendChild(box)
+    var b=document.createElement('button');b.type='button';b.className='choose-btn';b.textContent='Choose tonight';b.addEventListener('click',function(){choose(d)});
+
+    box.appendChild(head);box.appendChild(status);box.appendChild(p);box.appendChild(pantry);
+    if(r.textContent)box.appendChild(r);
+    box.appendChild(tags);box.appendChild(recipe);box.appendChild(prefs);box.appendChild(b);
+    el.results.appendChild(box)
   });
   if(shown<list.length){el.more.classList.remove('hidden');el.more.textContent='Show more ('+(list.length-shown)+' left)'}else{el.more.classList.add('hidden')}
 }
 function updateWinner(){
   if(!winnerDish)return;
-  var d=winnerDish;el.winnerMeta.textContent=d.cuisine+' · '+d.time+' · '+d.proteins.join(' / ')+' · '+d.carbs.join(' / ')+' · '+(isCookedHere(d)?'✓ Cooked here':'○ New idea');
+  var d=winnerDish,look=cuisineLook(d);
+  el.winner.dataset.theme=look.key;el.winnerMark.textContent=look.code;
+  el.winnerMeta.textContent=d.cuisine+' · '+d.time+' · '+d.proteins.join(' / ')+' · '+d.carbs.join(' / ')+' · '+(isCookedHere(d)?'✓ Cooked here':'○ New idea');
   el.winnerBlurb.textContent=blurb(d);showPantry(el.winnerPantry,d);el.winnerRecent.textContent=recentText(d);showRecipe(el.winnerRecipe,d);el.winnerPrefs.innerHTML='';el.winnerPrefs.appendChild(prefControls(d));
   el.ateThis.textContent=lastHistory(d)&&lastHistory(d).date===localDateKey()?'✓ Logged for today':'✓ We ate this';el.ateThis.classList.toggle('ate-confirm',el.ateThis.textContent.indexOf('Logged')>=0)
 }
@@ -543,6 +917,7 @@ function choose(d){if(!d)return;last=d.name;winnerDish=d;el.winnerName.textConte
 function randomPick(){var list=current();if(last&&list.length>1)list=list.filter(function(d){return d.name!==last});if(!list.length)return null;var total=0,weighted=list.map(function(d){var w=preferences[d.name]==='love'?3:1;total+=w;return[d,w]});var roll=Math.random()*total;for(var i=0;i<weighted.length;i++){roll-=weighted[i][1];if(roll<0)return weighted[i][0]}return weighted[weighted.length-1][0]}
 [el.cuisine,el.protein,el.carb,el.time,el.pantryFilter,el.recentFilter,el.recipeFilter,el.includeNew].forEach(function(x){x.addEventListener('change',function(){shown=16;el.winner.classList.add('hidden');winnerDish=null;render()})});
 el.pick.addEventListener('click',function(){choose(randomPick())});
+if(el.mobilePick)el.mobilePick.addEventListener('click',function(){choose(randomPick())});
 el.again.addEventListener('click',function(){choose(randomPick())});
 el.ateThis.addEventListener('click',function(){if(winnerDish)markEaten(winnerDish)});
 el.reset.addEventListener('click',function(){el.cuisine.value='';el.protein.value='';el.carb.value='';el.time.value='';el.pantryFilter.value='all';el.recentFilter.value='0';el.recipeFilter.value='all';el.includeNew.checked=true;shown=16;last='';winnerDish=null;el.winner.classList.add('hidden');saveState();render()});
