@@ -10,62 +10,375 @@
 <meta name="description" content="Family dinner picker with cuisine, protein, carb and time filters.">
 <title>What Are We Eating?</title>
 <style>
-*{box-sizing:border-box} body{margin:0;background:#f6f2ea;color:#25211c;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
-main{max-width:760px;margin:auto;padding:22px 16px 48px} h1{font-size:30px;margin:0 0 6px} p{line-height:1.45} .muted{color:#6f685f}
-.card{background:#fffdf9;border:1px solid #ded7cc;border-radius:16px;padding:15px;margin:12px 0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px} label{font-weight:650;font-size:14px;display:block}
-select{width:100%;margin-top:6px;min-height:46px;border:1px solid #cfc6b9;border-radius:11px;background:#fff;color:#25211c;font-size:16px;padding:8px 10px}
-.actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0} button{min-height:46px;border-radius:11px;border:1px solid #cfc6b9;background:#fff;padding:10px 14px;font-size:16px;color:#25211c} button.primary{background:#f2d9ca;border-color:#c86a3c;font-weight:700}
-.switch{display:flex;align-items:center;gap:9px;font-weight:500;margin-top:10px} .switch input{width:20px;height:20px}
-#winner{border-color:#c86a3c;background:#fff7f2} #winner h2{font-size:25px;margin:4px 0} .meta{font-size:13px;color:#6f685f}
-.result{background:#fffdf9;border:1px solid #ded7cc;border-radius:14px;padding:14px;margin:10px 0} .result h3{margin:0 0 5px;font-size:18px}
-.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px} .tag{font-size:12px;border:1px solid #ded7cc;border-radius:999px;padding:4px 7px}
-.good{color:#2d6a4f;font-weight:700} .hidden{display:none} .counter{font-weight:650;margin-top:20px}
+:root{
+  --bg:#f4efe6;
+  --bg2:#efe4d3;
+  --surface:#fffdf9;
+  --surface-2:#fff8f1;
+  --text:#2a231d;
+  --muted:#746a60;
+  --line:#e0d5c7;
+  --line-2:#ece4d8;
+  --shadow:0 10px 30px rgba(74,46,24,.08);
+  --shadow-soft:0 6px 18px rgba(74,46,24,.06);
+  --terracotta:#c86a3c;
+  --terracotta-deep:#a7552d;
+  --terracotta-soft:#f5ddd0;
+  --olive:#475b42;
+  --olive-soft:#edf3ea;
+  --mustard:#b8922f;
+  --mustard-soft:#fff7d6;
+  --accent-grad:linear-gradient(135deg,#cf6f40 0%,#b85f35 100%);
+  --hero-grad:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,249,242,.9));
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(223,194,160,.30), transparent 32%),
+    radial-gradient(circle at 85% 18%, rgba(200,106,60,.08), transparent 24%),
+    linear-gradient(180deg,var(--bg),#f8f3eb 28%, var(--bg));
+}
+main{max-width:900px;margin:auto;padding:24px 16px 80px}
+h1,h2,h3{
+  font-family:Georgia,"Times New Roman",serif;
+  letter-spacing:-0.02em;
+}
+h1{font-size:2.35rem;line-height:1.02;margin:0 0 10px}
+p{line-height:1.55}
+.muted{color:var(--muted)}
 
-.pantry{margin:10px 0 4px;display:flex;flex-direction:column;gap:7px}
-.pantry-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:13px}
-.pantry-row strong{margin-right:2px}
-.pantry-chip{border-radius:999px;padding:4px 8px;border:1px solid #ded7cc;background:#f5efe6}
-.pantry-row.check .pantry-chip{background:#fff7d6;border-color:#e4cf78}
-.pantry-row.grab .pantry-chip{background:#fff0e8;border-color:#dfa783}
-.pantry.friendly{display:block;color:#2d6a4f;font-weight:750;font-size:13px}
-.secondary-grid{margin-top:12px}
-.helper{font-size:12px;color:#7d756b;margin:9px 0 0}
-.pref-row{display:flex;gap:7px;flex-wrap:wrap;margin:11px 0 4px}
-.pref-row button{min-height:38px;padding:7px 10px;font-size:13px;border-radius:999px}
-.pref-row button.active-love{background:#ffe8ec;border-color:#da8796;font-weight:750}
-.pref-row button.active-fine{background:#eef3e9;border-color:#9caf8b;font-weight:750}
-.pref-row button.active-veto{background:#f4e4df;border-color:#bc6e5a;font-weight:750}
-.recent{font-size:12px;color:#766e64;margin:7px 0}
-.tonight-status{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:9px 10px;border-radius:11px;background:#f3ece4;font-size:13px}
-.tonight-status button{min-height:34px;padding:5px 9px;font-size:12px}
-.winner-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.winner-actions button{flex:1 1 150px}
-.ate-confirm{color:#2d6a4f;font-weight:750}
+.hero{
+  margin-bottom:16px;
+  padding:22px 22px 18px;
+  border:1px solid rgba(216,201,185,.9);
+  border-radius:26px;
+  background:var(--hero-grad);
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+.hero:before{
+  content:"";
+  position:absolute; inset:auto -40px -60px auto;
+  width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle, rgba(200,106,60,.18), rgba(200,106,60,0) 68%);
+  pointer-events:none;
+}
+.hero-kicker{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--terracotta-deep);
+  margin-bottom:12px;
+}
+.hero-kicker:before{
+  content:"";
+  width:28px;height:2px;border-radius:999px;background:var(--terracotta);
+}
+.hero-row{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;
+}
+.hero-sub{
+  font-size:15px;
+  max-width:46rem;
+  margin:0;
+}
+.hero-stat{
+  min-width:140px;
+  padding:12px 14px;
+  border-radius:18px;
+  border:1px solid rgba(200,106,60,.20);
+  background:rgba(255,255,255,.7);
+  box-shadow:var(--shadow-soft);
+  text-align:left;
+}
+.hero-stat strong{
+  display:block;
+  font-size:28px;
+  line-height:1;
+  color:var(--terracotta-deep);
+  font-family:Georgia,"Times New Roman",serif;
+}
+.hero-stat span{
+  display:block;
+  margin-top:4px;
+  font-size:12px;
+  color:var(--muted);
+}
 
-.recipe-zone{margin-top:12px;border-top:1px solid #e7e0d7;padding-top:10px}
-.recipe-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
-.recipe-badge{font-size:12px;font-weight:750;border-radius:999px;padding:4px 8px;border:1px solid #d7cec2;background:#f5efe6}
-.recipe-badge.house{background:#eaf5ec;border-color:#a8c9ae;color:#2d6a4f}
-.recipe-yield{font-size:12px;color:#766e64}
-details.recipe-detail{border:1px solid #ded7cc;border-radius:11px;background:#fffaf4;margin:7px 0;overflow:hidden}
-details.recipe-detail summary{cursor:pointer;list-style:none;padding:10px 12px;font-weight:750;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:18px;
+  margin:12px 0;
+  box-shadow:var(--shadow-soft);
+}
+.control-card{
+  padding:18px;
+}
+.control-card .grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.control-card label{
+  display:block;
+  font-weight:700;
+  font-size:13px;
+  color:#584d42;
+  letter-spacing:.01em;
+}
+.secondary-grid{margin-top:14px}
+select{
+  width:100%;
+  margin-top:7px;
+  min-height:50px;
+  border:1px solid #d7cab9;
+  border-radius:15px;
+  background:
+    linear-gradient(180deg, #fff, #fffaf4);
+  color:var(--text);
+  font-size:15px;
+  padding:10px 12px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+}
+select:focus, button:focus, details summary:focus, input:focus{
+  outline:2px solid rgba(200,106,60,.24);
+  outline-offset:2px;
+}
+.switch{
+  display:flex;align-items:center;gap:10px;
+  font-weight:600;
+  margin-top:14px;
+  padding:12px 13px;
+  border-radius:16px;
+  background:#fcf7f0;
+  border:1px solid var(--line-2);
+}
+.switch input{width:20px;height:20px;accent-color:var(--terracotta)}
+.helper{
+  font-size:12px;color:#7a6f64;margin:10px 0 0;line-height:1.45
+}
+.actions{
+  display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 0
+}
+button{
+  min-height:46px;
+  border-radius:14px;
+  border:1px solid #d5c8b8;
+  background:#fff;
+  padding:10px 14px;
+  font-size:15px;
+  color:var(--text);
+  transition:transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
+  box-shadow:0 2px 0 rgba(88,58,35,.04);
+}
+button:hover{transform:translateY(-1px);box-shadow:0 8px 16px rgba(74,46,24,.08)}
+button.primary{
+  background:var(--accent-grad);
+  border-color:var(--terracotta-deep);
+  color:#fff;
+  font-weight:800;
+  box-shadow:0 10px 22px rgba(176,92,46,.22);
+}
+.control-actions{
+  position:sticky;
+  bottom:12px;
+  background:linear-gradient(180deg, rgba(255,253,249,0), rgba(255,253,249,.98) 22%);
+  padding-top:14px;
+  z-index:10;
+}
+.control-actions .primary{min-width:180px}
+#tonightStatus{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-top:14px;padding:10px 12px;border-radius:15px;background:#f7f0e7;font-size:13px
+}
+.hidden{display:none !important}
+
+.winner-card{
+  border-color:#d59b78;
+  background:linear-gradient(180deg,#fff7f1,#fffdf9);
+  box-shadow:0 16px 34px rgba(143,84,51,.12);
+}
+#winner .meta{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--terracotta-deep);font-weight:800}
+#winner h2{font-size:2rem;margin:6px 0 6px}
+#winner .recent{margin-top:8px}
+.winner-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.winner-actions button{flex:1 1 180px}
+.ate-confirm{color:var(--olive);font-weight:800}
+
+.counter{
+  font-weight:700;
+  margin:22px 0 8px;
+  color:#564b40;
+}
+.counter:before{
+  content:"Results";
+  display:inline-block;
+  margin-right:10px;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  background:#efe6d8;
+  color:#6d5f50;
+  vertical-align:middle;
+}
+
+.result{
+  background:linear-gradient(180deg,#fffefb,#fffaf4);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:16px;
+  margin:12px 0;
+  box-shadow:var(--shadow-soft);
+  position:relative;
+  overflow:hidden;
+}
+.result:before{
+  content:"";
+  position:absolute; inset:0 auto 0 0;
+  width:5px; background:linear-gradient(180deg,#d98a5f,#b15f36);
+}
+.result h3{
+  margin:0 0 6px;
+  font-size:1.35rem;
+  padding-right:18px;
+}
+.meta{
+  font-size:12px;color:#75695d;
+  line-height:1.45;
+}
+.result p{margin:12px 0 10px}
+.tags{
+  display:flex;flex-wrap:wrap;gap:7px;margin-top:10px
+}
+.tag{
+  font-size:12px;border:1px solid #ded4c7;border-radius:999px;padding:5px 9px;
+  background:#fff;
+  color:#5d5147
+}
+.good{color:var(--olive);font-weight:800}
+
+.pantry{margin:12px 0 2px;display:flex;flex-direction:column;gap:8px}
+.pantry-row{display:flex;align-items:flex-start;flex-wrap:wrap;gap:6px;font-size:13px}
+.pantry-row strong{margin-right:4px}
+.pantry-chip{
+  border-radius:999px;padding:5px 9px;border:1px solid #ddd5ca;background:#f5efe6;
+  font-size:12px
+}
+.pantry-row.check .pantry-chip{background:var(--mustard-soft);border-color:#e1ca71}
+.pantry-row.grab .pantry-chip{background:#fff0e8;border-color:#deac8e}
+.pantry.friendly{
+  display:inline-flex;align-items:center;gap:8px;
+  color:var(--olive);
+  font-weight:800;
+  font-size:13px;
+  background:var(--olive-soft);
+  border:1px solid #c5d7c6;
+  border-radius:999px;
+  padding:7px 10px;
+  width:max-content;
+}
+.recent{font-size:12px;color:#776e64;margin:8px 0}
+.pref-row{
+  display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 6px
+}
+.pref-row button{
+  min-height:38px;padding:7px 10px;font-size:13px;border-radius:999px;background:#fff
+}
+.pref-row button.active-love{background:#ffe7ec;border-color:#d68b99;font-weight:800}
+.pref-row button.active-fine{background:#eef4e9;border-color:#9db38f;font-weight:800}
+.pref-row button.active-veto{background:#f6e4dd;border-color:#bf745f;font-weight:800}
+
+.recipe-zone{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid #e8dfd3
+}
+.recipe-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px
+}
+.recipe-badge{
+  font-size:12px;font-weight:800;border-radius:999px;padding:5px 10px;border:1px solid #d7cec2;background:#f5efe6;color:#5d5147
+}
+.recipe-badge.house{background:#eaf5ec;border-color:#a8c9ae;color:var(--olive)}
+.recipe-yield{font-size:12px;color:#776d64}
+details.recipe-detail{
+  border:1px solid #e2d8cb;
+  border-radius:15px;
+  background:linear-gradient(180deg,#fffdf9,#fff8f2);
+  margin:8px 0;
+  overflow:hidden;
+  transition:box-shadow .18s ease, border-color .18s ease;
+}
+details.recipe-detail[open]{
+  border-color:#d8c9b8;
+  box-shadow:0 8px 18px rgba(74,46,24,.05);
+}
+details.recipe-detail summary{
+  cursor:pointer;list-style:none;padding:12px 13px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:8px
+}
 details.recipe-detail summary::-webkit-details-marker{display:none}
-details.recipe-detail summary:after{content:'▾';font-size:13px;transition:transform .15s ease}
+details.recipe-detail summary:after{
+  content:'▾';font-size:13px;transition:transform .15s ease;color:#7b6c5e
+}
 details.recipe-detail[open] summary:after{transform:rotate(180deg)}
-.recipe-body{padding:0 12px 12px;border-top:1px solid #eee5da}
-.recipe-section-title{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#766e64;margin:11px 0 5px;font-weight:800}
+.recipe-body{padding:0 13px 13px;border-top:1px solid #efe6da}
+.recipe-section-title{
+  font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#7a6d61;margin:12px 0 6px;font-weight:800
+}
 .recipe-list,.method-list{margin:6px 0 0;padding-left:20px}
-.recipe-list li,.method-list li{margin:6px 0;line-height:1.4}
+.recipe-list li,.method-list li{margin:6px 0;line-height:1.45}
 .method-list strong{display:block;margin-bottom:2px}
-.draft-note{font-size:13px;color:#766e64;line-height:1.45;margin:10px 0 0}
-@media(max-width:600px){.grid{grid-template-columns:1fr} h1{font-size:27px}}
+.draft-note{font-size:13px;color:#766e64;line-height:1.5;margin:10px 0 0}
+
+#results > .result button:last-child{
+  margin-top:12px;
+}
+
+@media (min-width: 720px){
+  #results{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+  }
+  #results .result{margin:0}
+}
+@media(max-width:600px){
+  main{padding:18px 14px 88px}
+  .control-card .grid{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  #winner h2{font-size:1.75rem}
+  .hero{padding:18px}
+  .hero-stat{width:100%}
+  .control-actions{
+    position:sticky; bottom:8px;
+    margin:16px -6px 0;
+    padding:10px 6px 0;
+  }
+  .control-actions button{flex:1 1 140px}
+}
 </style>
 </head>
 <body><main>
-<h1>What Are We Eating? 🍽️</h1>
-<p class="muted">Choose as much or as little as you care about tonight. The order does not matter.</p>
-<div class="card">
+<header class="hero">
+<div class="hero-kicker">Family Dinner Picker</div>
+<div class="hero-row">
+  <div>
+    <h1>What Are We Eating? 🍽️</h1>
+    <p class="muted hero-sub">Choose as much or as little as you care about tonight. Filter hard, roll the dice, and let the house favourites rise to the top.</p>
+  </div>
+  <div class="hero-stat"><strong>151</strong><span>dinners in the catalogue</span></div>
+</div>
+</header>
+<div class="card control-card">
 <div class="grid">
 <label>Cuisine<select id="cuisine"></select></label>
 <label>Protein<select id="protein"></select></label>
@@ -80,9 +393,9 @@ details.recipe-detail[open] summary:after{transform:rotate(180deg)}
 <label class="switch"><input id="includeNew" type="checkbox" checked> Include dishes we haven't cooked yet</label>
 <p class="helper">❤️ Loved dishes get extra weight in the random picker. Preferences and meal history stay on this device.</p>
 <div id="tonightStatus" class="tonight-status hidden"></div>
-<div class="actions"><button class="primary" id="pick" type="button">🎲 Pick for us</button><button id="reset" type="button">Clear filters</button></div>
+<div class="actions control-actions"><button class="primary" id="pick" type="button">🎲 Pick for us</button><button id="reset" type="button">Clear filters</button></div>
 </div>
-<div id="winner" class="card hidden" aria-live="polite"><div class="meta">TONIGHT'S PICK</div><h2 id="winnerName"></h2><div class="meta" id="winnerMeta"></div><p id="winnerBlurb"></p><div id="winnerPantry"></div><div id="winnerRecent" class="recent"></div><div id="winnerRecipe"></div><div id="winnerPrefs"></div><div class="winner-actions"><button class="primary" id="again" type="button">🎲 Pick another</button><button id="ateThis" type="button">✓ We ate this</button></div></div>
+<div id="winner" class="card winner-card hidden" aria-live="polite"><div class="meta">TONIGHT'S PICK</div><h2 id="winnerName"></h2><div class="meta" id="winnerMeta"></div><p id="winnerBlurb"></p><div id="winnerPantry"></div><div id="winnerRecent" class="recent"></div><div id="winnerRecipe"></div><div id="winnerPrefs"></div><div class="winner-actions"><button class="primary" id="again" type="button">🎲 Pick another</button><button id="ateThis" type="button">✓ We ate this</button></div></div>
 <div class="counter" id="count"></div>
 <div id="results"></div>
 <div class="actions"><button id="more" type="button" class="hidden">Show more</button></div>
